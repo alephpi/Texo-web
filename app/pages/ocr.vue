@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import katex, { render } from 'katex'
+import katex from 'katex'
 import 'katex/dist/katex.min.css'
+import type { SelectItem } from '@nuxt/ui'
 
 const createObjectUrl = (file) => {
   if (file instanceof File) {
@@ -11,6 +12,7 @@ const createObjectUrl = (file) => {
 const { t } = useI18n()
 
 const latexCode = ref('')
+const toast = useToast() // 用于显示复制成功提示
 
 const renderedLatex = computed(() => {
   if (!latexCode.value) return ''
@@ -32,6 +34,69 @@ const renderedLatex = computed(() => {
     .filter(Boolean) as string[]
   return { result, errorMessages }
 })
+
+// 包裹格式选项
+const wrapOptions = ref<SelectItem[]>([
+  { label: 'none', value: 'none' },
+  { label: '$', value: '$...$' },
+  { label: '$$', value: '$$...$$' },
+  { label: '\\( \\)', value: '\\(...\\)' },
+  { label: '\\[ \\]', value: '\\[...\\]' },
+  { label: 'align env', value: '\\begin{align}\n...\n\\end{align}' },
+  { label: 'equation env', value: '\\begin{equation}\n...\n\\end{equation}' }
+])
+const wrapOption = ref(null)
+
+function wrapCode(code: string): string {
+  const cleanCode = code.trim()
+  switch (wrapOption.value) {
+    case null:
+      return cleanCode
+    case 'none':
+      return cleanCode
+    default:
+      return wrapOption.value.replace('...', cleanCode)
+  }
+}
+
+// 复制 LaTeX 代码到剪贴板(应用包裹但不改变文本框内容)
+async function copyLatex() {
+  if (!latexCode.value) {
+    toast?.add({
+      title: '没有可复制的内容',
+      color: 'warning',
+      duration: 1000,
+      progress: false
+    })
+    return
+  }
+
+  try {
+    const wrappedCode = wrapCode(latexCode.value)
+    await navigator.clipboard.writeText(wrappedCode)
+
+    toast?.add({
+      title: '复制成功',
+      description: `已复制 ${wrapOption.value} 格式`,
+      color: 'success',
+      duration: 1000,
+      progress: false
+    })
+  } catch (err) {
+    toast?.add({
+      title: '复制失败',
+      description: '请手动复制',
+      color: 'error',
+      duration: 1000,
+      progress: false
+    })
+  }
+}
+
+// 标准化 LaTeX 代码(应用包裹到文本框)
+function normalizeLatex() {
+
+}
 </script>
 
 <template>
@@ -39,7 +104,6 @@ const renderedLatex = computed(() => {
     <UPageBody class="p-10">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
         <!-- 左侧栏 -->
-
         <div class="space-y-4">
           <UCard>
             <template #header>
@@ -119,9 +183,19 @@ const renderedLatex = computed(() => {
               <div class="flex justify-between items-center">
                 <div class="flex gap-2">
                   <!-- 复制按钮 -->
+                  <USelect
+                    v-model="wrapOption"
+                    value-key="value"
+                    placeholder="复制带包裹格式"
+                    :items="wrapOptions"
+                    size="sm"
+                    class="w-35"
+                  />
                   <UButton
+                    :disabled="!wrapOption"
                     icon="i-lucide-copy"
                     size="sm"
+                    :ui="{ base: 'disabled:bg-gray-400 disabled:opacity-100 aria-disabled:opacity-100' }"
                     @click="copyLatex"
                   >
                     复制
@@ -135,51 +209,6 @@ const renderedLatex = computed(() => {
                   >
                     标准化
                   </UButton>
-
-                  <!-- 下拉菜单选择标准化格式 -->
-                  <UDropdownMenu
-                    v-slot="{ open }"
-                    :modal="false"
-                    :items="[{
-                      label: '无包围',
-                      to: 'https://starter-template.nuxt.dev/',
-                      color: 'primary',
-                      checked: true,
-                      type: 'checkbox'
-                    }, {
-                      label: '$...$',
-                      to: 'https://docs-template.nuxt.dev/'
-                    }, {
-                      label: '$$...$$',
-                      to: 'https://saas-template.nuxt.dev/'
-                    }, {
-                      label: '\\\(...\\\)',
-                      to: 'https://dashboard-template.nuxt.dev/'
-                    }, {
-                      label: '\\\[...\\\]',
-                      to: 'https://landing-template.nuxt.dev/'
-                    }, {
-                      label: '\\begin{align}...\\end{align}',
-                      to: 'https://portfolio-template.nuxt.dev/'
-                    }, {
-                      label: '\\begin{equation}...\\end{equation}',
-                      to: 'https://chat-template.nuxt.dev/'
-                    }]"
-                    :content="{ align: 'start' }"
-                    size="xs"
-                  >
-                    <UButton
-                      label="无包围"
-                      variant="subtle"
-                      trailing-icon="i-lucide-chevron-down"
-                      size="xs"
-                      class="font-semibold truncate"
-                      :class="[open]"
-                      :ui="{
-                        trailingIcon: ['transition-transform duration-200', open ? 'rotate-180' : undefined].filter(Boolean).join(' ')
-                      }"
-                    />
-                  </UDropdownMenu>
                 </div>
               </div>
             </template>
