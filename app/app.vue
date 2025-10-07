@@ -27,29 +27,7 @@ useSeoMeta({
 
 <template>
   <UApp>
-    <UHeader>
-      <template #left>
-        <NuxtLink to="/">
-          <AppLogoText class="w-auto h-6 shrink-0" />
-        </NuxtLink>
-
-        <!-- <TemplateMenu /> -->
-      </template>
-
-      <template #right>
-        <UColorModeButton />
-
-        <UButton
-          to="https://github.com/alephpi/Texo"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
-      </template>
-    </UHeader>
-
+    <AppHeader />
     <UMain>
       <NuxtPage />
     </UMain>
@@ -59,13 +37,19 @@ useSeoMeta({
     <UFooter>
       <template #left>
         <p class="text-sm text-muted">
-          Built with Nuxt UI • © {{ new Date().getFullYear() }}
+          Powered by Nuxt
+        </p>
+      </template>
+
+      <template #default>
+        <p class="text-sm text-muted">
+          Sicheng Mao • © 2025 - present
         </p>
       </template>
 
       <template #right>
         <UButton
-          to="https://github.com/alephpi/Texo"
+          to="https://github.com/alephpi/Texo-web"
           target="_blank"
           icon="i-simple-icons-github"
           aria-label="GitHub"

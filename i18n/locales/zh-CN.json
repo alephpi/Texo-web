@@ -1,0 +1,18 @@
+{
+  "title": "Texo",
+  "description": "纯前端公式识别工具",
+  "star-me": "点个星星",
+  "snip-and-recognize": "截图并识别",
+  "comment": "留言",
+  "ocr": "公式识别",
+  "uploader_label": "拖拽公式图片到此",
+  "uploader_description": "PNG或JPG格式，白边越少效果越好",
+  "info": {
+    "title": "Image Information",
+    "filename": "Filename",
+    "size": "File Size",
+    "dimensions": "Dimensions",
+    "type": "Type",
+    "noImage": "No image uploaded"
+  }
+}

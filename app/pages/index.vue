@@ -1,13 +1,14 @@
 <script setup lang="ts">
-const links = ref([
+const { t } = useI18n()
+const links = computed(() => [
   {
-    label: 'Snip and Recognize',
+    label: t('snip-and-recognize'),
     to: './ocr',
     target: '_blank',
     trailingIcon: 'i-lucide-arrow-right',
     size: 'xl'
   }, {
-    label: 'Star me',
+    label: t('star-me'),
     to: 'https://github.com/alephpi/Texo',
     target: '_blank',
     icon: 'i-simple-icons-github',
@@ -17,17 +18,18 @@ const links = ref([
   }
 ])
 </script>
+
 <template>
   <div>
     <UPageHero
       title="Texo"
-      description="In-browser LaTeX OCR"
+      :description="t('description')"
       :links="links">
       <template #headline>
-      <div class="flex items-center justify-center">
-        <AppLogo class="w-auto h-24" />
-      </div>
-        </template>
+        <div class="flex items-center justify-center">
+          <AppLogo class="w-auto h-24" />
+        </div>
+      </template>
     </UPageHero>
   </div>
 </template>
