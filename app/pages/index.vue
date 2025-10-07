@@ -3,8 +3,8 @@ const { t } = useI18n()
 const links = computed(() => [
   {
     label: t('snip-and-recognize'),
-    to: './ocr',
-    target: '_blank',
+    to: '/ocr',
+    target: '_self',
     trailingIcon: 'i-lucide-arrow-right',
     size: 'xl'
   }, {
@@ -24,7 +24,8 @@ const links = computed(() => [
     <UPageHero
       title="Texo"
       :description="t('description')"
-      :links="links">
+      :links="links"
+    >
       <template #headline>
         <div class="flex items-center justify-center">
           <AppLogo class="w-auto h-24" />
