@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { ButtonProps } from '@nuxt/ui'
+
 const { t } = useI18n()
-const links = computed(() => [
+const links = computed<ButtonProps[]>(() => [
   {
     label: t('snip-and-recognize'),
     to: '/ocr',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import { en, fr, zh_cn } from '@nuxt/ui/locale'
+import { en, zh_cn } from '@nuxt/ui/locale'
 
 const { t, locale, setLocale } = useI18n()
 const route = useRoute()
@@ -38,8 +38,8 @@ const items = computed<NavigationMenuItem[]>(() => [{
     <template #right>
       <ULocaleSelect
         v-model="locale"
-        :locales="[zh_cn, en, fr]"
-        @update:model-value="setLocale($event)"
+        :locales="[zh_cn, en]"
+        @update:model-value="setLocale($event as 'en' | 'zh-CN')"
       />
 
       <UButton

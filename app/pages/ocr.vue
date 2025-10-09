@@ -3,11 +3,8 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
 
-const createObjectUrl = (file) => {
-  if (file instanceof File) {
-    return URL.createObjectURL(file)
-  }
-  return file
+const createObjectUrl = (file: File) => {
+  return URL.createObjectURL(file)
 }
 const { t } = useI18n()
 
@@ -15,24 +12,24 @@ const latexCode = ref('')
 const toast = useToast() // 用于显示复制成功提示
 
 const renderedLatex = computed(() => {
-  if (!latexCode.value) return ''
+  if (!latexCode.value) {
+    return { renderResult: '', errorMessage: '' }
+  }
 
-  const result = katex.renderToString(latexCode.value, {
+  const renderResult = katex.renderToString(latexCode.value, {
     throwOnError: false,
     displayMode: true
   })
   // 创建临时 DOM 节点
   const container = document.createElement('div')
-  container.innerHTML = result
+  container.innerHTML = renderResult
 
   // 查找所有 katex-error 节点
-  const errorSpans = container.querySelectorAll('.katex-error')
+  const errorSpan = container.querySelector('.katex-error')
 
   // 提取 title 属性
-  const errorMessages = Array.from(errorSpans)
-    .map(el => el.getAttribute('title'))
-    .filter(Boolean) as string[]
-  return { result, errorMessages }
+  const errorMessage = errorSpan?.getAttribute('title')
+  return { renderResult, errorMessage }
 })
 
 // 包裹格式选项
@@ -45,7 +42,7 @@ const wrapOptions = ref<SelectItem[]>([
   { label: 'align env', value: '\\begin{align}\n...\n\\end{align}' },
   { label: 'equation env', value: '\\begin{equation}\n...\n\\end{equation}' }
 ])
-const wrapOption = ref(null)
+const wrapOption = ref<string | null>(null)
 
 function wrapCode(code: string): string {
   const cleanCode = code.trim()
@@ -82,7 +79,7 @@ async function copy() {
       duration: 1000,
       progress: false
     })
-  } catch (err) {
+  } catch {
     toast?.add({
       title: '复制失败',
       description: '请手动复制',
@@ -119,7 +116,7 @@ function normalize() {
   const lineSegments: string[][] = []
 
   for (let i = 0; i < allLines.length; i++) {
-    const line = allLines[i]
+    const line = allLines[i]!
     if (line.includes('\\begin{') || line.includes('\\end{')) {
       // 这些行不参与对齐
       lineSegments.push([line])
@@ -136,15 +133,15 @@ function normalize() {
 
   // 如果有需要对齐的行，计算列宽
   if (linesToAlign.length > 0) {
-    const maxCols = Math.max(...linesToAlign.map(i => lineSegments[i].length))
+    const maxCols = Math.max(...linesToAlign.map(i => lineSegments[i]!.length))
     const colWidths: number[] = []
 
     for (let col = 0; col < maxCols - 1; col++) {
       let maxWidth = 0
       for (const idx of linesToAlign) {
-        const segments = lineSegments[idx]
+        const segments = lineSegments[idx]!
         if (segments[col]) {
-          maxWidth = Math.max(maxWidth, segments[col].length)
+          maxWidth = Math.max(maxWidth, segments[col]!.length)
         }
       }
       colWidths.push(maxWidth)
@@ -152,7 +149,7 @@ function normalize() {
 
     // 对齐包含 & 的行
     for (const idx of linesToAlign) {
-      const segments = lineSegments[idx]
+      const segments = lineSegments[idx]!
       const paddedSegments = segments.map((seg, segIdx) => {
         if (segIdx < segments.length - 1) {
           return seg.padEnd(colWidths[segIdx] || 0)
@@ -166,11 +163,11 @@ function normalize() {
   // 重新组合，只在需要对齐的行之间添加 \\
   const result: string[] = []
   for (let i = 0; i < lineSegments.length; i++) {
-    const lineContent = lineSegments[i][0] || lineSegments[i].join(' & ')
+    const lineContent = lineSegments[i]![0] || lineSegments[i]!.join(' & ')
 
     // 判断是否需要在行尾添加 \\
     if (i < lineSegments.length - 1) {
-      const currentLine = allLines[i]
+      // const currentLine = allLines[i]
       const nextLine = allLines[i + 1]
       const isCurrentAlignLine = linesToAlign.includes(i)
       const isNextAlignLine = linesToAlign.includes(i + 1)
@@ -178,7 +175,7 @@ function normalize() {
       // 如果当前行和下一行都是对齐行，添加 \\
       if (isCurrentAlignLine && isNextAlignLine) {
         result.push(lineContent + ' \\\\')
-      } else if (isCurrentAlignLine && !nextLine.includes('\\end{')) {
+      } else if (isCurrentAlignLine && !nextLine!.includes('\\end{')) {
         result.push(lineContent + ' \\\\')
       } else {
         result.push(lineContent)
@@ -244,7 +241,7 @@ function normalize() {
               <div
                 v-if="latexCode"
                 class="text-sm"
-                v-html="renderedLatex['result']"
+                v-html="renderedLatex['renderResult']"
               />
               <p
                 v-else
@@ -253,10 +250,11 @@ function normalize() {
                 输入 LaTeX 代码查看预览
               </p>
             </div>
+
             <div
-              v-if="renderedLatex['errorMessages']"
+              v-if="renderedLatex['errorMessage']"
               class="mt-2 text-sm text-red-700"
-              v-html="renderedLatex['errorMessages'].join('<br>')"
+              v-html="renderedLatex['errorMessage']"
             />
           </UCard>
 
