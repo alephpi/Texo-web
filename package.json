@@ -11,10 +11,12 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@iconify-json/carbon": "^1.2.13",
     "@iconify-json/lucide": "^1.2.68",
     "@iconify-json/simple-icons": "^1.2.54",
     "@nuxt/ui": "^4.0.1",
     "@nuxtjs/i18n": "^10.1.0",
+    "@xenova/transformers": "^2.17.2",
     "katex": "^0.16.23",
     "nuxt": "^4.1.2"
   },

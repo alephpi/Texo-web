@@ -3,9 +3,13 @@
     <p align="center">
       {{ t('comment_welcome') }}
     </p>
-    <ULink to="https://github.com/alephpi/Texo-web/issues/new/choose">
-      {{ t('report_issue') }}
-    </ULink>
+    <p align="center">
+      <ULink
+        to="https://github.com/alephpi/Texo-web/issues/new/choose"
+      >
+        {{ t('report_issue') }}
+      </ULink>
+    </p>
   </div>
 </template>
 
