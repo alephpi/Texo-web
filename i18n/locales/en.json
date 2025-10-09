@@ -16,6 +16,8 @@
   "copy_with_format": "copy with format",
   "copy": "copy",
   "normalize": "normalize",
+  "comment_welcome": "Wanna say something to the developer or the users?",
+  "report_issue": "Encounter an issue? Report here!",
   "info": {
     "title": "Image Information",
     "filename": "Filename",

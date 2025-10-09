@@ -202,9 +202,8 @@ function normalize() {
                 {{ t('load_model') }}
               </h2>
             </template>
+            <div />
           </UCard>
-        </div>
-        <div class="space-y-4">
           <UCard>
             <template #header>
               <h2 class="text-xl font-semibold">
