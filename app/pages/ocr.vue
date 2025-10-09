@@ -199,7 +199,16 @@ function normalize() {
           <UCard>
             <template #header>
               <h2 class="text-xl font-semibold">
-                上传公式图片
+                {{ t('load_model') }}
+              </h2>
+            </template>
+          </UCard>
+        </div>
+        <div class="space-y-4">
+          <UCard>
+            <template #header>
+              <h2 class="text-xl font-semibold">
+                {{ t('upload_image') }}
               </h2>
             </template>
             <div class="p-4 flex items-center justify-center text-center rounded-lg">
@@ -247,7 +256,7 @@ function normalize() {
                 v-else
                 class="text-gray-400"
               >
-                输入 LaTeX 代码查看预览
+                {{ t('preview_render_placeholder') }}
               </p>
             </div>
 
@@ -261,13 +270,13 @@ function normalize() {
           <UCard>
             <template #header>
               <h2 class="text-xl font-semibold">
-                {{ t('preview_code') }}
+                {{ t('edit_code') }}
               </h2>
             </template>
             <UTextarea
               v-model="latexCode"
               :rows="8"
-              placeholder="输入 LaTeX 代码"
+              :placeholder="t('edit_code_placeholder')"
               autoresize
               class="font-mono w-full"
             />
@@ -278,7 +287,7 @@ function normalize() {
                   <USelect
                     v-model="wrapOption"
                     value-key="value"
-                    placeholder="复制带包裹格式"
+                    :placeholder="t('copy_with_format') "
                     :items="wrapOptions"
                     size="sm"
                     class="w-35"
@@ -290,7 +299,7 @@ function normalize() {
                     :ui="{ base: 'disabled:bg-gray-400 disabled:opacity-100 aria-disabled:opacity-100' }"
                     @click="copy"
                   >
-                    复制
+                    {{ t('copy') }}
                   </UButton>
 
                   <!-- 标准化按钮 -->
@@ -299,7 +308,7 @@ function normalize() {
                     size="sm"
                     @click="normalize"
                   >
-                    标准化
+                    {{ t('normalize') }}
                   </UButton>
                 </div>
               </div>

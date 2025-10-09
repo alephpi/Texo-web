@@ -41,7 +41,7 @@ const items = computed<NavigationMenuItem[]>(() => [{
         :locales="[zh_cn, en]"
         @update:model-value="setLocale($event as 'en' | 'zh-CN')"
       />
-
+      <UColorModeButton />
       <UButton
         to="https://github.com/alephpi/Texo"
         target="_blank"

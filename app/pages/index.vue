@@ -14,6 +14,7 @@ const links = computed<ButtonProps[]>(() => [
     to: 'https://github.com/alephpi/Texo',
     target: '_blank',
     icon: 'i-simple-icons-github',
+    trailingIcon: 'i-lucide-star',
     size: 'xl',
     color: 'neutral',
     variant: 'subtle'
