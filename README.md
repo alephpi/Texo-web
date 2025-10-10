@@ -2,11 +2,11 @@
 The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt.
 
 ## Acknowledgement
-- Texo: model
+- Texo: pretrained LaTeX OCR model
 - Transformers.js: pipeline
-- Volverjs/ai: codebase
 - Vue: JS framework
 - Nuxt: meta-framework, UI template and components
+- nuxt-workers: handle model loading, predicting and data processing task with web worker.
 
 ## Develop
 

@@ -35,7 +35,7 @@ const renderedLatex = computed(() => {
 // 模型选项
 const modelOption = ref('texo-transfer-32bit-80MB')
 const modelOptions = ref<SelectItem[]> ([
-  { label: '', value: 'briaai/RMBG-1.4' },
+  { label: 'translate', value: 'Xenova/nllb-200-distilled-600M' },
   { label: 'texo-transfer-32bit-80MB', value: 'link-to-32bit' },
   { label: 'texo-transfer-16bit-40MB', value: 'link-to-16bit' },
   { label: 'texo-transfer-8bit-20MB', value: 'link-to-8bit' }

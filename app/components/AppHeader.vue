@@ -13,6 +13,10 @@ const items = computed<NavigationMenuItem[]>(() => [{
   label: t('comment'),
   to: '/comment',
   active: route.path.startsWith('/comment')
+}, {
+  label: t('translate'),
+  to: '/translate',
+  active: route.path.startsWith('/translate')
 }
 ])
 </script>
