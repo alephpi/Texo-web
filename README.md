@@ -10,6 +10,10 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 
 ## Develop
 
+>[!warning]
+> Maybe you already know, but please avoid using snap version `node.js`. It kills me 1 day of life.
+>
+
 ### Setup
 
 Make sure to install the dependencies:

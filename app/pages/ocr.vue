@@ -2,6 +2,15 @@
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
+import { env, AutoTokenizer, VisionEncoderDecoderModel } from '@huggingface/transformers'
+
+// Load from your own folder and disallow remote fetch, if offline:
+// env.localModelPath = '/models' // serves /models/your-model/...
+// env.allowRemoteModels = false
+
+// Optional: prefer GPU in supporting browsers
+
+import { loadModel, ocr } from '../workers/ocr'
 
 const createObjectUrl = (file: File) => {
   return URL.createObjectURL(file)
@@ -90,6 +99,15 @@ async function copy() {
 function normalize() {
   latexCode.value = normalizeLatex(latexCode.value)
 }
+
+// async function runOCR() {
+//   const res = await ocr(input.value)
+//   message.value = res
+// }
+
+const model = await loadModel('alephpi/FormulaNet')
+console.log(model)
+console.log(env)
 </script>
 
 <template>
