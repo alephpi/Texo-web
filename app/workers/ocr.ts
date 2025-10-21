@@ -47,7 +47,7 @@ export async function loadModel(
 }
 
 /**
- * @param input pixel_values
+ * @param pixel_values
  * @param options
  * @returns text
  */

@@ -2,7 +2,7 @@
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
-import { env, AutoTokenizer, VisionEncoderDecoderModel } from '@huggingface/transformers'
+import { env, AutoTokenizer, VisionEncoderDecoderModel, Tensor, cat } from '@huggingface/transformers'
 
 // Load from your own folder and disallow remote fetch, if offline:
 // env.localModelPath = '/models' // serves /models/your-model/...
@@ -11,10 +11,9 @@ import { env, AutoTokenizer, VisionEncoderDecoderModel } from '@huggingface/tran
 // Optional: prefer GPU in supporting browsers
 
 import { loadModel, ocr } from '../workers/ocr'
+import { preprocessImg } from '../workers/imageProcessor'
+import { encodeDataURL } from 'image-js'
 
-const createObjectUrl = (file: File) => {
-  return URL.createObjectURL(file)
-}
 const { t } = useI18n()
 
 const latexCode = ref('')
@@ -100,14 +99,57 @@ function normalize() {
   latexCode.value = normalizeLatex(latexCode.value)
 }
 
-// async function runOCR() {
-//   const res = await ocr(input.value)
-//   message.value = res
-// }
+async function loadTestImage() {
+  const urls = [
+    'assets/test_img/单行公式.png',
+    'assets/test_img/单行公式2.png',
+    'assets/test_img/多行公式.png',
+    'assets/test_img/多行公式2.jpg'
+  ]
+  const randomIndex = Math.floor(Math.random() * urls.length)
+  const response = await fetch(urls[randomIndex])
+  const blob = await response.blob()
+  imageFile.value = new File([blob], 'test-image.jpg', { type: blob.type })
+  console.log(imageFile.value)
+}
+
+async function runOCR() {
+  const res = await ocr(input.value)
+  message.value = res
+}
 
 const model = await loadModel('alephpi/FormulaNet')
 console.log(model)
 console.log(env)
+
+const imageFile = ref<File | null>(null)
+const imgHolder = ref(null)
+const imageURL = ref<string | undefined>(undefined)
+
+// Watch for when the avatar becomes available
+// watch(imageFile, async (newVal) => {
+//   await nextTick()
+//   if (newVal && imgHolder.value) {
+//     // Access the actual DOM element
+//     const domElement = imgHolder.value.$el.querySelector('#image-holder')
+//     console.log('Avatar DOM element:', domElement)
+//     preprocessImg(domElement)
+//     // Do something with it
+//   }
+// })
+
+// when imageFile changes, preprocess it and update the imageURL to preview and ocr it
+watch(imageFile, async (newVal) => {
+  if (newVal) {
+    const { image, array } = await preprocessImg(newVal)
+    imageURL.value = encodeDataURL(image)
+    const tensor = new Tensor('float32', array, [1, 1, 384, 384])
+    const pixel_values = cat([tensor, tensor, tensor], 1)
+    console.log(pixel_values)
+    const res = await ocr(pixel_values)
+    console.log(res)
+  }
+})
 </script>
 
 <template>
@@ -156,10 +198,13 @@ console.log(env)
                   :label="t('uploader_label')"
                   :description="t('uploader_description')"
                   :ui="{ base: 'w-96 h-96 flex-auto' }"
+                  :model-value="imageFile"
                 >
                   <template #file-leading="{ file }">
                     <UAvatar
-                      :src="createObjectUrl(file)"
+                      id="image-holder"
+                      ref="imgHolder"
+                      :src="imageURL"
                       :ui="{ image: 'object-contain' }"
                       class="size-full rounded-lg"
                     />
@@ -167,6 +212,16 @@ console.log(env)
                 </UFileUpload>
               </div>
             </div>
+            <template #footer>
+              <UButton
+                :label="t('load_test_image')"
+                @click="loadTestImage"
+              />
+              <UButton
+                :label="t('ocr')"
+                @click="runOCR"
+              />
+            </template>
           </UCard>
         </div>
 
