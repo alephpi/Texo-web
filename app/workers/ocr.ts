@@ -1,13 +1,18 @@
 import type { PreTrainedModel, Tensor } from '@huggingface/transformers'
-import { env, AutoTokenizer, VisionEncoderDecoderModel } from '@huggingface/transformers'
+import { env, PreTrainedTokenizer, VisionEncoderDecoderModel } from '@huggingface/transformers'
 
 env.backends.onnx.wasm!.numThreads = 1
 // 禁用本地模型
 env.allowLocalModels = false
 
+type OCRModel = {
+  model: VisionEncoderDecoderModel
+  tokenizer: PreTrainedTokenizer
+}
+
 class OCRSingleton {
   private static instance: OCRSingleton
-  private modelCache: Map<string, Promise<PreTrainedModel>> = new Map()
+  private modelCache: Map<string, OCRModel> = new Map()
 
   private constructor() {}
 
@@ -18,18 +23,17 @@ class OCRSingleton {
     return OCRSingleton.instance
   }
 
-  public async loadModel(modelName: string): Promise<PreTrainedModel> {
+  public async loadModel(modelName: string) {
     if (!this.modelCache.has(modelName)) {
-      const preTrainedModelPromise = VisionEncoderDecoderModel.from_pretrained(
-        modelName,
-        { dtype: 'fp32' }
-      ) as Promise<PreTrainedModel>
-      this.modelCache.set(modelName, preTrainedModelPromise)
+      const model = await VisionEncoderDecoderModel.from_pretrained(modelName, { dtype: 'fp32' })
+      const tokenizer = await PreTrainedTokenizer.from_pretrained(modelName)
+
+      this.modelCache.set(modelName, { model, tokenizer })
     }
     return this.modelCache.get(modelName)!
   }
 
-  public getLoadedModel(modelName: string): Promise<PreTrainedModel> | null {
+  public getLoadedModel(modelName: string) {
     return this.modelCache.get(modelName) || null
   }
 }
@@ -41,7 +45,7 @@ class OCRSingleton {
  */
 export async function loadModel(
   modelName: string = 'alephpi/FormulaNet'
-): Promise<PreTrainedModel> {
+) {
   const singleton = OCRSingleton.getInstance()
   return await singleton.loadModel(modelName)
 }
@@ -62,9 +66,10 @@ export async function ocr(
   } = options
 
   const singleton = OCRSingleton.getInstance()
-  const model = await singleton.loadModel(modelName)
+  const { model, tokenizer } = await singleton.loadModel(modelName)
 
   const outputs = await model.generate({ inputs: pixel_values })
+  const text = tokenizer.batch_decode(outputs, { skip_special_tokens: true })[0]
 
-  return outputs
+  return text
 }

@@ -146,8 +146,7 @@ watch(imageFile, async (newVal) => {
     const tensor = new Tensor('float32', array, [1, 1, 384, 384])
     const pixel_values = cat([tensor, tensor, tensor], 1)
     console.log(pixel_values)
-    const res = await ocr(pixel_values)
-    console.log(res)
+    latexCode.value = await ocr(pixel_values) || ''
   }
 })
 </script>
