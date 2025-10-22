@@ -88,8 +88,8 @@ async function copy() {
 }
 
 // 标准化 LaTeX 代码(应用包裹到文本框)
-function normalize() {
-  latexCode.value = normalizeLatex(latexCode.value)
+function format() {
+  latexCode.value = formatLatex(latexCode.value)
 }
 
 // async function loadTestImage() {
@@ -285,9 +285,9 @@ async function runOCR(imageArray: Float32Array) {
                     :disabled="!latexCode"
                     icon="i-carbon-edit"
                     size="sm"
-                    @click="normalize"
+                    @click="format"
                   >
-                    {{ t('normalize') }}
+                    {{ t('format') }}
                   </UButton>
                 </div>
               </div>

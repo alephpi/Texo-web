@@ -19,7 +19,7 @@
   "edit_placeholder": "在此输入LaTeX公式",
   "copy_with_format": "带格式复制",
   "copy": "复制",
-  "normalize": "标准化",
+  "format": "格式化",
   "comment_welcome": "想对开发者或用户说点什么？",
   "report_issue": "遇到问题？点我反馈！",
   "info": {
