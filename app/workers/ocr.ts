@@ -4,25 +4,25 @@ env.backends.onnx.wasm!.numThreads = 1
 // 禁用本地模型
 env.allowLocalModels = false
 
-type OCRModel = {
+export type OCRModel = {
   model: VisionEncoderDecoderModel
   tokenizer: PreTrainedTokenizer
 }
 
-class OCRSingleton {
-  private static instance: OCRSingleton
+export class OCRModelManager {
+  private static instance: OCRModelManager
   private modelCache: Map<string, OCRModel> = new Map()
 
   private constructor() {}
 
-  public static getInstance(): OCRSingleton {
-    if (!OCRSingleton.instance) {
-      OCRSingleton.instance = new OCRSingleton()
+  public static getInstance(): OCRModelManager {
+    if (!OCRModelManager.instance) {
+      OCRModelManager.instance = new OCRModelManager()
     }
-    return OCRSingleton.instance
+    return OCRModelManager.instance
   }
 
-  public async loadModel(modelName: string) {
+  public async loadModel(modelName: string): Promise<OCRModel> {
     if (!this.modelCache.has(modelName)) {
       const model = await VisionEncoderDecoderModel.from_pretrained(modelName, { dtype: 'fp32' })
       const tokenizer = await PreTrainedTokenizer.from_pretrained(modelName)
@@ -30,10 +30,6 @@ class OCRSingleton {
       this.modelCache.set(modelName, { model, tokenizer })
     }
     return this.modelCache.get(modelName)!
-  }
-
-  public getLoadedModel(modelName: string) {
-    return this.modelCache.get(modelName) || null
   }
 }
 
@@ -44,8 +40,8 @@ class OCRSingleton {
  */
 export async function loadModel(
   modelName: string = 'alephpi/FormulaNet'
-) {
-  const singleton = OCRSingleton.getInstance()
+): Promise<OCRModel> {
+  const singleton = OCRModelManager.getInstance()
   return await singleton.loadModel(modelName)
 }
 
@@ -56,16 +52,10 @@ export async function loadModel(
  */
 export async function ocr(
   imageArray: Float32Array,
-  options: {
-    modelName?: string
-  } = {}
+  modelName?: string
 ) {
-  const {
-    modelName = 'alephpi/FormulaNet'
-  } = options
-
-  const singleton = OCRSingleton.getInstance()
-  const { model, tokenizer } = await singleton.loadModel(modelName)
+  modelName = modelName || 'alephpi/FormulaNet'
+  const { model, tokenizer } = await loadModel(modelName)
 
   const tensor = new Tensor('float32', imageArray, [1, 1, 384, 384])
   const pixel_values = cat([tensor, tensor, tensor], 1)

@@ -2,8 +2,8 @@
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
-import { env, Tensor, cat } from '@huggingface/transformers'
-
+import type { OCRModel } from '../workers/ocr'
+// import { OCRModelManager } from '../workers/ocr'
 // Load from your own folder and disallow remote fetch, if offline:
 // env.localModelPath = '/models' // serves /models/your-model/...
 // env.allowRemoteModels = false
@@ -39,10 +39,7 @@ const renderedLatex = computed(() => {
 // 模型选项
 const modelOption = ref('texo-transfer-32bit-80MB')
 const modelOptions = ref<SelectItem[]> ([
-  { label: 'translate', value: 'Xenova/nllb-200-distilled-600M' },
-  { label: 'texo-transfer-32bit-80MB', value: 'link-to-32bit' },
-  { label: 'texo-transfer-16bit-40MB', value: 'link-to-16bit' },
-  { label: 'texo-transfer-8bit-20MB', value: 'link-to-8bit' }
+  { label: 'texo-transfer-32bit-80MB', value: 'alephpi/FormulaNet' }
 ])
 
 // 包裹格式选项
@@ -118,19 +115,15 @@ function createObjectURL(file: File) {
 
 const imageArray = ref<Float32Array | undefined>(undefined)
 
-// Watch for when the avatar becomes available
-// watch(imageFile, async (newVal) => {
-//   await nextTick()
-//   if (newVal && imgHolder.value) {
-//     // Access the actual DOM element
-//     const domElement = imgHolder.value.$el.querySelector('#image-holder')
-//     console.log('Avatar DOM element:', domElement)
-//     preprocessImg(domElement)
-//     // Do something with it
-//   }
-// })
+const currentModelName = ref<string>('alephpi/FormulaNet')
+const currentModel = ref<OCRModel>()
 
-// when imageFile changes, preprocess it and update the imageURL to preview and ocr it
+// async function loadModel(modelName: string) {
+//   const ocrSingleton = OCRModelManager.getInstance()
+//   currentModel.value = await ocrSingleton.loadModel(modelName)
+//   console.log(currentModel.value)
+// }
+
 async function onFileChange(newFile: File | null | undefined) {
   if (newFile) {
     const { image, array } = await preprocessImg(newFile)
@@ -168,7 +161,10 @@ async function runOCR(imageArray: Float32Array) {
             </div>
             <UCheckbox label="{{ t('use_web_gpu') }}" />
             <UCheckbox label="{{ t('local_cache') }}" />
-            <UButton label="{{ t('model_title') }}" />
+            <UButton
+              label="{{ t('load_model') }}"
+              @click="loadModel(currentModelName)"
+            />
             <UButton label="{{ t('remove_cache') }}" />
           </UCard>
           <UCard>
