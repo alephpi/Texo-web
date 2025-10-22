@@ -115,9 +115,6 @@ function createObjectURL(file: File) {
 
 const imageArray = ref<Float32Array | undefined>(undefined)
 
-const currentModelName = ref<string>('alephpi/FormulaNet')
-const currentModel = ref<OCRModel>()
-
 // async function loadModel(modelName: string) {
 //   const ocrSingleton = OCRModelManager.getInstance()
 //   currentModel.value = await ocrSingleton.loadModel(modelName)
@@ -143,7 +140,7 @@ async function runOCR(imageArray: Float32Array) {
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
         <!-- 左侧栏 -->
         <div class="space-y-4">
-          <UCard>
+          <!-- <UCard>
             <template #header>
               <h2 class="text-xl font-semibold flex items-center gap-2">
                 <Icon name="carbon:model" />
@@ -166,7 +163,7 @@ async function runOCR(imageArray: Float32Array) {
               @click="loadModel(currentModelName)"
             />
             <UButton label="{{ t('remove_cache') }}" />
-          </UCard>
+          </UCard> -->
           <UCard>
             <template #header>
               <h2 class="text-xl font-semibold flex items-center gap-2">
