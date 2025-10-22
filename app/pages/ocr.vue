@@ -12,7 +12,7 @@ import { env, AutoTokenizer, VisionEncoderDecoderModel, Tensor, cat } from '@hug
 
 import { loadModel, ocr } from '../workers/ocr'
 import { preprocessImg } from '../workers/imageProcessor'
-import { encodeDataURL } from 'image-js'
+import { encodeDataURL, Image } from 'image-js'
 
 const { t } = useI18n()
 
@@ -99,24 +99,19 @@ function normalize() {
   latexCode.value = normalizeLatex(latexCode.value)
 }
 
-async function loadTestImage() {
-  const urls = [
-    'assets/test_img/单行公式.png',
-    'assets/test_img/单行公式2.png',
-    'assets/test_img/多行公式.png',
-    'assets/test_img/多行公式2.jpg'
-  ]
-  const randomIndex = Math.floor(Math.random() * urls.length)
-  const response = await fetch(urls[randomIndex])
-  const blob = await response.blob()
-  imageFile.value = new File([blob], 'test-image.jpg', { type: blob.type })
-  console.log(imageFile.value)
-}
-
-async function runOCR() {
-  const res = await ocr(input.value)
-  message.value = res
-}
+// async function loadTestImage() {
+//   const urls = [
+//     'assets/test_img/单行公式.png',
+//     'assets/test_img/单行公式2.png',
+//     'assets/test_img/多行公式.png',
+//     'assets/test_img/多行公式2.jpg'
+//   ]
+//   const randomIndex = Math.floor(Math.random() * urls.length)
+//   const response = await fetch(urls[randomIndex])
+//   const blob = await response.blob()
+//   imageFile.value = new File([blob], 'test-image.jpg', { type: blob.type })
+//   console.log(imageFile.value)
+// }
 
 const model = await loadModel('alephpi/FormulaNet')
 console.log(model)
@@ -124,7 +119,12 @@ console.log(env)
 
 const imageFile = ref<File | null>(null)
 const imgHolder = ref(null)
-const imageURL = ref<string | undefined>(undefined)
+
+function createObjectURL(file: File) {
+  return URL.createObjectURL(file)
+}
+
+const imageArray = ref<Float32Array | undefined>(undefined)
 
 // Watch for when the avatar becomes available
 // watch(imageFile, async (newVal) => {
@@ -139,16 +139,29 @@ const imageURL = ref<string | undefined>(undefined)
 // })
 
 // when imageFile changes, preprocess it and update the imageURL to preview and ocr it
-watch(imageFile, async (newVal) => {
-  if (newVal) {
-    const { image, array } = await preprocessImg(newVal)
-    imageURL.value = encodeDataURL(image)
-    const tensor = new Tensor('float32', array, [1, 1, 384, 384])
+async function onFileChange(newFile: File | null | undefined) {
+  console.log('on FileChange', newFile)
+  if (newFile) {
+    const { image, array } = await preprocessImg(newFile)
+    imageArray.value = array
+  }
+}
+
+async function runOCR() {
+  if (imageArray.value) {
+    const tensor = new Tensor('float32', imageArray.value, [1, 1, 384, 384])
     const pixel_values = cat([tensor, tensor, tensor], 1)
     console.log(pixel_values)
     latexCode.value = await ocr(pixel_values) || ''
+    return
   }
-})
+  toast.add?.({
+    title: '请先上传图片',
+    color: 'warning',
+    duration: 1000,
+    progress: false
+  })
+}
 </script>
 
 <template>
@@ -191,19 +204,20 @@ watch(imageFile, async (newVal) => {
                 class="w-96 h-96"
               >
                 <UFileUpload
+                  v-model="imageFile"
                   icon="i-lucide-image"
                   highlight
                   accept="image/*"
                   :label="t('uploader_label')"
                   :description="t('uploader_description')"
                   :ui="{ base: 'w-96 h-96 flex-auto' }"
-                  :model-value="imageFile"
+                  @update:model-value="onFileChange"
                 >
                   <template #file-leading="{ file }">
                     <UAvatar
                       id="image-holder"
                       ref="imgHolder"
-                      :src="imageURL"
+                      :src="createObjectURL(file)"
                       :ui="{ image: 'object-contain' }"
                       class="size-full rounded-lg"
                     />
@@ -212,10 +226,10 @@ watch(imageFile, async (newVal) => {
               </div>
             </div>
             <template #footer>
-              <UButton
+              <!-- <UButton
                 :label="t('load_test_image')"
                 @click="loadTestImage"
-              />
+              /> -->
               <UButton
                 :label="t('ocr')"
                 @click="runOCR"
