@@ -2,12 +2,12 @@
 The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt.
 
 ## Todo
+- [ ] array environment conversion to aligned and so on.
+- [ ] better formatting
+- [ ] support web-gpu
 - js related (PR welcome as I'm short of front-end skills.)
     - [ ] model loading progress bar
     - [ ] model switching (support multiple models under a model manager singleton )
-- Misc:
-  - [ ] array environment conversion to aligned and so on.
-  - [ ] better formatting
 
 ## Acknowledgement
 - Texo: pretrained LaTeX OCR model
