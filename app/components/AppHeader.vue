@@ -6,7 +6,7 @@ const { t, locale, setLocale } = useI18n()
 const route = useRoute()
 
 const items = computed<NavigationMenuItem[]>(() => [{
-  label: t('ocr'),
+  label: t('recognize'),
   to: '/ocr',
   active: route.path.startsWith('/ocr')
 }, {

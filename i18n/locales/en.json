@@ -3,7 +3,7 @@
   "description": "In-browser LaTeX formula OCR tool",
   "star-me": "Star me",
   "snip-and-recognize": "Snip & Recognize!",
-  "ocr": "LaTeX OCR",
+  "recognize": "Recognize",
   "comment": "Comment",
   "model_title": "Model",
   "upload_title": "Upload",

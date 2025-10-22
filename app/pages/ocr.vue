@@ -202,15 +202,17 @@ async function runOCR(imageArray: Float32Array) {
               </div>
             </div>
             <template #footer>
-              <!-- <UButton
+              <div class="flex justify-end">
+                <!-- <UButton
                 :label="t('load_test_image')"
                 @click="loadTestImage"
               /> -->
-              <UButton
-                :disabled="!imageArray"
-                :label="t('ocr')"
-                @click="runOCR(imageArray)"
-              />
+                <UButton
+                  :disabled="!imageArray"
+                  :label="t('recognize')"
+                  @click="runOCR(imageArray)"
+                />
+              </div>
             </template>
           </UCard>
         </div>
@@ -276,7 +278,6 @@ async function runOCR(imageArray: Float32Array) {
                     :disabled="!wrapOption"
                     icon="i-carbon-copy"
                     size="sm"
-                    :ui="{ base: 'disabled:bg-gray-400 disabled:opacity-100 aria-disabled:opacity-100' }"
                     @click="copy"
                   >
                     {{ t('copy') }}
@@ -284,6 +285,7 @@ async function runOCR(imageArray: Float32Array) {
 
                   <!-- 标准化按钮 -->
                   <UButton
+                    :disabled="!latexCode"
                     icon="i-carbon-edit"
                     size="sm"
                     @click="normalize"
@@ -299,3 +301,14 @@ async function runOCR(imageArray: Float32Array) {
     </UPageBody>
   </UPage>
 </template>
+
+<style scoped>
+button:disabled {
+  background-color: #9ca3af; /* gray-400 */
+  opacity: 1;
+}
+
+button[aria-disabled="true"] {
+  opacity: 1;
+}
+</style>

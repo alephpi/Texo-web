@@ -3,7 +3,7 @@
   "description": "纯前端 LaTeX 公式识别工具",
   "star-me": "点个星星",
   "snip-and-recognize": "截图并识别",
-  "ocr": "公式识别",
+  "recognize": "识别",
   "comment": "留言",
   "model_title": "模型",
   "model_load": "加载模型",
