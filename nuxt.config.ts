@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     'nuxt-workers'
   ],
+  ssr: false,
   components: true,
 
   devtools: {
@@ -19,7 +20,6 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-01-15',
-
   eslint: {
     config: {
       stylistic: {
