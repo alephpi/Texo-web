@@ -23,7 +23,6 @@ function cropMargin(input: Image): Image {
     if (data[i] < min) min = data[i]
   }
 
-  console.log(max, min)
   if (max === min) return image
 
   // threshold at 200

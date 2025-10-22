@@ -1,5 +1,4 @@
-import type { PreTrainedModel, Tensor } from '@huggingface/transformers'
-import { env, PreTrainedTokenizer, VisionEncoderDecoderModel } from '@huggingface/transformers'
+import { cat, env, PreTrainedTokenizer, VisionEncoderDecoderModel, Tensor } from '@huggingface/transformers'
 
 env.backends.onnx.wasm!.numThreads = 1
 // 禁用本地模型
@@ -56,7 +55,7 @@ export async function loadModel(
  * @returns text
  */
 export async function ocr(
-  pixel_values: Tensor,
+  imageArray: Float32Array,
   options: {
     modelName?: string
   } = {}
@@ -68,6 +67,8 @@ export async function ocr(
   const singleton = OCRSingleton.getInstance()
   const { model, tokenizer } = await singleton.loadModel(modelName)
 
+  const tensor = new Tensor('float32', imageArray, [1, 1, 384, 384])
+  const pixel_values = cat([tensor, tensor, tensor], 1)
   const outputs = await model.generate({ inputs: pixel_values })
   const text = tokenizer.batch_decode(outputs, { skip_special_tokens: true })[0]
 

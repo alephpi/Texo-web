@@ -2,17 +2,13 @@
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
-import { env, AutoTokenizer, VisionEncoderDecoderModel, Tensor, cat } from '@huggingface/transformers'
+import { env, Tensor, cat } from '@huggingface/transformers'
 
 // Load from your own folder and disallow remote fetch, if offline:
 // env.localModelPath = '/models' // serves /models/your-model/...
 // env.allowRemoteModels = false
 
 // Optional: prefer GPU in supporting browsers
-
-import { loadModel, ocr } from '../workers/ocr'
-import { preprocessImg } from '../workers/imageProcessor'
-import { encodeDataURL, Image } from 'image-js'
 
 const { t } = useI18n()
 
@@ -113,10 +109,6 @@ function normalize() {
 //   console.log(imageFile.value)
 // }
 
-const model = await loadModel('alephpi/FormulaNet')
-console.log(model)
-console.log(env)
-
 const imageFile = ref<File | null>(null)
 const imgHolder = ref(null)
 
@@ -140,27 +132,15 @@ const imageArray = ref<Float32Array | undefined>(undefined)
 
 // when imageFile changes, preprocess it and update the imageURL to preview and ocr it
 async function onFileChange(newFile: File | null | undefined) {
-  console.log('on FileChange', newFile)
   if (newFile) {
     const { image, array } = await preprocessImg(newFile)
     imageArray.value = array
   }
 }
 
-async function runOCR() {
-  if (imageArray.value) {
-    const tensor = new Tensor('float32', imageArray.value, [1, 1, 384, 384])
-    const pixel_values = cat([tensor, tensor, tensor], 1)
-    console.log(pixel_values)
-    latexCode.value = await ocr(pixel_values) || ''
-    return
-  }
-  toast.add?.({
-    title: '请先上传图片',
-    color: 'warning',
-    duration: 1000,
-    progress: false
-  })
+async function runOCR(imageArray: Float32Array) {
+  const text = await ocr(imageArray)
+  latexCode.value = text || ''
 }
 </script>
 
@@ -231,8 +211,9 @@ async function runOCR() {
                 @click="loadTestImage"
               /> -->
               <UButton
+                :disabled="!imageArray"
                 :label="t('ocr')"
-                @click="runOCR"
+                @click="runOCR(imageArray)"
               />
             </template>
           </UCard>
