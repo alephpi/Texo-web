@@ -1,12 +1,19 @@
 import { cat, env, PreTrainedTokenizer, VisionEncoderDecoderModel, Tensor } from '@huggingface/transformers'
 
 env.backends.onnx.wasm!.numThreads = 1
-// 禁用本地模型
 env.allowLocalModels = false
 
-export type OCRModel = {
+type OCRModel = {
   model: VisionEncoderDecoderModel
   tokenizer: PreTrainedTokenizer
+}
+
+export type ModelConfig = {
+  modelName: string
+  env_config: {
+    remoteHost: string
+    remotePathTemplate: string
+  }
 }
 
 export class OCRModelManager {
@@ -22,13 +29,16 @@ export class OCRModelManager {
     return OCRModelManager.instance
   }
 
-  public async loadModel(modelName: string): Promise<OCRModel> {
+  public async loadModel(modelName: string) {
     if (!this.modelCache.has(modelName)) {
       const model = await VisionEncoderDecoderModel.from_pretrained(modelName, { dtype: 'fp32' })
       const tokenizer = await PreTrainedTokenizer.from_pretrained(modelName)
 
       this.modelCache.set(modelName, { model, tokenizer })
     }
+  }
+
+  public async getModel(modelName: string): Promise<OCRModel> {
     return this.modelCache.get(modelName)!
   }
 }
@@ -39,10 +49,15 @@ export class OCRModelManager {
  * @returns OCR PreTrainedModel
  */
 export async function loadModel(
-  modelName: string = 'alephpi/FormulaNet'
-): Promise<OCRModel> {
-  const singleton = OCRModelManager.getInstance()
-  return await singleton.loadModel(modelName)
+  model_config: ModelConfig
+) {
+  const manager = OCRModelManager.getInstance()
+  const { modelName, env_config } = model_config
+  env.remoteHost = env_config.remoteHost
+  env.remotePathTemplate = env_config.remotePathTemplate
+  await manager.loadModel(modelName)
+  // cannot return a class instance from worker to main thread, return a string instead
+  return modelName
 }
 
 /**
@@ -52,15 +67,12 @@ export async function loadModel(
  */
 export async function ocr(
   imageArray: Float32Array,
-  modelName?: string
+  modelName: string
 ) {
-  modelName = modelName || 'alephpi/FormulaNet'
-  const { model, tokenizer } = await loadModel(modelName)
-
+  const ocrModel = await OCRModelManager.getInstance().getModel(modelName)
   const tensor = new Tensor('float32', imageArray, [1, 1, 384, 384])
   const pixel_values = cat([tensor, tensor, tensor], 1)
-  const outputs = await model.generate({ inputs: pixel_values })
-  const text = tokenizer.batch_decode(outputs, { skip_special_tokens: true })[0]
-
+  const outputs = await ocrModel.model.generate({ inputs: pixel_values })
+  const text = ocrModel.tokenizer.batch_decode(outputs, { skip_special_tokens: true })[0]
   return text
 }

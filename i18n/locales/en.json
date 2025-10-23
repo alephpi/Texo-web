@@ -9,6 +9,8 @@
   "upload_title": "Upload",
   "uploader_label": "Click to upload your LaTeX image or drop here",
   "uploader_description": "PNG or JPG, less margin better performance",
+  "use_modelscope": "load model from modelscope",
+  "is_cn_mainland": "check it if you are China mainland user",
   "preview_title": "Preview",
   "preview_placeholder": "Input LaTeX formula to preview",
   "edit_title": "Edit",

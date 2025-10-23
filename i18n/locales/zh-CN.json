@@ -13,6 +13,8 @@
   "upload_title": "上传",
   "uploader_label": "点击上传公式图片或拖拽到此",
   "uploader_description": "PNG或JPG格式，白边越少效果越好",
+  "use_ms_hub": "从魔搭社区加载模型",
+  "is_cn_mainland": "中国大陆用户请勾选",
   "preview_title": "预览",
   "preview_placeholder": "输入LaTeX公式以预览",
   "edit_title": "编辑",
