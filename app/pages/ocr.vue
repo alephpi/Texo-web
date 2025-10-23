@@ -125,26 +125,28 @@ async function onFileChange(newFile: File | null | undefined) {
 const use_ms_hub = ref(false)
 
 async function runOCR(imageArray: Float32Array, use_ms_hub: boolean) {
-  let model_config: ModelConfig = {
-    modelName: 'alephpi/FormulaNet',
-    env_config: {
-      remoteHost: 'https://huggingface.co/',
-      remotePathTemplate: '{model}/resolve/{revision}'
-    }
+  const model_config: ModelConfig = {
+    modelName: '../../models/model'
   }
-  if (use_ms_hub) {
-    model_config = {
-      modelName: 'alephpi98/FormulaNet',
-      env_config: {
-        remoteHost: 'https://modelscope.cn/api/v1/models/',
-        remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
-      }
-    }
-  }
+  // let model_config: ModelConfig = {
+  //   modelName: 'alephpi/FormulaNet',
+  //   env_config: {
+  //     remoteHost: 'https://huggingface.co/',
+  //     remotePathTemplate: '{model}/resolve/{revision}'
+  //   }
+  // }
+  // if (use_ms_hub) {
+  //   model_config = {
+  //     modelName: 'alephpi98/FormulaNet',
+  //     env_config: {
+  //       remoteHost: 'https://modelscope.cn/api/v1/models/',
+  //       remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
+  //     }
+  //   }
+  // }
   console.log(model_config)
   // console.log(await fetch('https://www.modelscope.cn/api/v1/models/alephpi98/FormulaNet/repo?Revision=master&FilePath=onnx/generation_config.json'))
   const ocrModelName = await loadModel(model_config)
-  console.log(ocrModelName)
   latexCode.value = await ocr(imageArray, ocrModelName) || ''
 }
 </script>
@@ -219,11 +221,11 @@ async function runOCR(imageArray: Float32Array, use_ms_hub: boolean) {
                 :label="t('load_test_image')"
                 @click="loadTestImage"
               /> -->
-                <UCheckbox
+                <!-- <UCheckbox
                   v-model="use_ms_hub"
                   :label="t('use_ms_hub')"
                   :description="t('is_cn_mainland')"
-                />
+                /> -->
                 <UButton
                   :disabled="!imageArray"
                   :label="t('recognize')"

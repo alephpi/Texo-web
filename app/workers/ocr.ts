@@ -1,7 +1,7 @@
 import { cat, env, PreTrainedTokenizer, VisionEncoderDecoderModel, Tensor } from '@huggingface/transformers'
 
 env.backends.onnx.wasm!.numThreads = 1
-env.allowLocalModels = false
+env.allowLocalModels = true
 
 type OCRModel = {
   model: VisionEncoderDecoderModel
@@ -10,7 +10,7 @@ type OCRModel = {
 
 export type ModelConfig = {
   modelName: string
-  env_config: {
+  env_config?: {
     remoteHost: string
     remotePathTemplate: string
   }
@@ -53,8 +53,11 @@ export async function loadModel(
 ) {
   const manager = OCRModelManager.getInstance()
   const { modelName, env_config } = model_config
-  env.remoteHost = env_config.remoteHost
-  env.remotePathTemplate = env_config.remotePathTemplate
+  if (env_config) {
+    env.remoteHost = env_config.remoteHost
+    env.remotePathTemplate = env_config.remotePathTemplate
+  }
+  console.log(modelName)
   await manager.loadModel(modelName)
   // cannot return a class instance from worker to main thread, return a string instead
   return modelName
