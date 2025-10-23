@@ -19,7 +19,7 @@ export function wrapCode(code: string, wrapOption: string | null): string {
  * @param code - 原始 LaTeX 代码
  * @returns 标准化后的代码
  */
-export function normalizeLatex(code: string): string {
+export function formatLatex(code: string): string {
   if (!code) return ''
 
   // 在 \begin{array}{...} 前后添加换行,但保持 {...} 与 \begin{array} 在同一行
