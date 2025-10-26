@@ -3,8 +3,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
-    '@nuxtjs/i18n',
-    'nuxt-workers'
+    '@nuxtjs/i18n'
   ],
   ssr: false,
   components: true,

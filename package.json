@@ -19,8 +19,7 @@
     "@nuxtjs/i18n": "^10.1.0",
     "image-js": "^1.0.0",
     "katex": "^0.16.23",
-    "nuxt": "^4.1.2",
-    "nuxt-workers": "^0.1.0"
+    "nuxt": "^4.1.2"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.9.0",
