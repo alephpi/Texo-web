@@ -108,61 +108,11 @@ function createObjectURL(file: File) {
   return URL.createObjectURL(file)
 }
 
-const imageArray = ref<Float32Array | undefined>(undefined)
-
-// async function loadModel(modelName: string) {
-//   const ocrSingleton = OCRModelManager.getInstance()
-//   currentModel.value = await ocrSingleton.loadModel(modelName)
-//   console.log(currentModel.value)
-// }
-
 async function onFileChange(newFile: File | null | undefined) {
   if (newFile) {
-    // const { image, array } = await preprocessImg(newFile)
-    // imageArray.value = array
     imageFile.value = newFile
   }
 }
-
-const use_mirror = ref(false)
-const progressInfo = ref<ProgressInfo>()
-const hasCached = ref(false)
-// hasCached.value = await checkCache()
-
-// async function runOCR(
-//   imageArray: Float32Array,
-//   use_mirror: boolean
-// ) {
-//   let model_config: ModelConfig = {
-//     modelName: 'alephpi/FormulaNet',
-//     env_config: {
-//       remoteHost: 'https://huggingface.co/',
-//       remotePathTemplate: '{model}/resolve/{revision}'
-//     }
-//   }
-//   if (use_mirror) {
-//     model_config = {
-//       modelName: 'alephpi98/FormulaNet',
-//       env_config: {
-//         remoteHost: 'https://modelscope.cn/api/v1/models/',
-//         remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
-//       }
-//     }
-//   }
-//   console.log(model_config)
-//   const r = await fetch('https://gh.llkk.cc/https://raw.githubusercontent.com/alephpi/Texo-web/refs/heads/master/public/models/model/onnx/encoder_model.onnx')
-//   console.log(r.arrayBuffer())
-//   const ocrModelName = await loadModel(model_config, (info: ProgressInfo) => {
-//     progressInfo.value = info
-//     console.log(info)
-//   })
-//   latexCode.value = await ocr(imageArray, ocrModelName) || ''
-// }
-
-// const { init, predict, isReady } = useOCR({ global: true })
-const isLoading = ref(false)
-const loadingStatus = ref('')
-const loadingProgress = ref(0)
 
 const model_config: ModelConfig = {
   modelName: 'alephpi/FormulaNet',
@@ -171,32 +121,64 @@ const model_config: ModelConfig = {
     remotePathTemplate: '{model}/resolve/{revision}'
   }
 }
-// if (use_mirror.value) {
-//   model_config = {
-//     modelName: 'alephpi98/FormulaNet',
-//     env_config: {
-//       remoteHost: 'https://modelscope.cn/api/v1/models/',
-//       remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
-//     }
-//   }
-// }
+
 // 初始化模型
-const ocr = new OCR()
+
+const { init, predict, progress, isReady } = useOCR()
+console.log('isReady', isReady.value)
+
+// const unifiedProgress = computed(() => {
+//   let total = 0
+//   let loaded = 1
+//   for (const key in progress.value) {
+//     const info = progress.value[key]!
+//     total += info.total!
+//     loaded += info.loaded!
+//   }
+//   const result = Math.round(loaded / total)
+//   return result
+// })
+const unifiedProgress = ref({
+  loaded: 0,
+  total: 0,
+  progress: 0
+})
+
+watch(progress, (record) => {
+  // we have 4 model files (encoder, decoder, config, generation_config) to download, the progress bar should be counted when all files start to download
+  let loaded = 0
+  let total = 0
+  if (Object.keys(record).length === 4) {
+    for (const key in record) {
+      console.log(key, record[key])
+      const info = progress.value[key]!
+      total += info.total!
+      loaded += info.loaded!
+    }
+    unifiedProgress.value = { loaded, total, progress: Math.round(100 * loaded / total) }
+  }
+}, { deep: true })
+// const ocr = new OCR()
 const load = async (model_config: ModelConfig) => {
-  ocr.init(model_config)
-  console.log(ocr)
-  console.log('init!')
-  // const { progress, promise } = await init(model_config)
-  // console.log(progress)
-  // console.log(promise)
+  console.log('init')
+  await init(model_config)
+  console.log('isReady', isReady.value)
 }
 
 // 预测
 const runOCR = async (imageFile: File) => {
-  console.log('runOCR')
-  console.log(imageFile)
-  const result = await ocr.predict(imageFile)
-  if (result.status === 'result') latexCode.value = result.output || ''
+  console.log('predict')
+  const result = await predict(imageFile)
+  if (result.status === 'result') {
+    latexCode.value = result.output || ''
+  } else {
+    toast.add({
+      title: '识别失败',
+      description: result.output || '未知错误',
+      color: 'error',
+      duration: 1000
+    })
+  }
 }
 </script>
 
@@ -266,12 +248,12 @@ const runOCR = async (imageFile: File) => {
             </div>
             <template #footer>
               <div class="flex justify-end">
-                <UBadge
+                <!-- <UBadge
                   :color="hasCached ? 'success' : 'warning'"
                   variant="subtle"
                 >
                   {{ hasCached ? '已缓存' : '未缓存' }}
-                </UBadge>
+                </UBadge> -->
                 <!-- <UButton
                 :label="t('load_test_image')"
                 @click="loadTestImage"
@@ -281,15 +263,29 @@ const runOCR = async (imageFile: File) => {
                   :label="t('use_ms_hub')"
                   :description="t('is_cn_mainland')"
                 /> -->
-                <UButton
-                  :label="t('load')"
-                  @click="load(model_config)"
-                />
-                <UButton
-                  :disabled="!imageFile"
-                  :label="t('recognize')"
-                  @click="runOCR(imageFile!)"
-                />
+
+                <div
+                  class="space-y-4 p-4"
+                >
+                  <div v-if="unifiedProgress.total !== 0">
+                    <span> Loading model </span>
+                    <UProgress
+                      :model-value="unifiedProgress.progress"
+                      status
+                      size="sm"
+                    />
+                    <span class="text-sm text-gray-500">{{ (unifiedProgress.loaded / (1024 * 1024)).toFixed(2) }} M / {{ (unifiedProgress.total / (1024 * 1024)).toFixed(2) }} M</span>
+                  </div>
+                  <UButton
+                    :label="t('load')"
+                    @click="load(model_config)"
+                  />
+                  <UButton
+                    :disabled="!imageFile"
+                    :label="t('recognize')"
+                    @click="runOCR(imageFile!)"
+                  />
+                </div>
               </div>
             </template>
           </UCard>

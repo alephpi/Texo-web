@@ -106,7 +106,6 @@ export class OCR extends WorkerProxy<OCRResult> {
         this.off(WorkerStatus.Error, key)
       })
 
-      // send translate request after init
       this.worker.postMessage({
         action: OCRAction.Predict,
         image,
