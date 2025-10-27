@@ -81,7 +81,7 @@ self.onmessage = async (event: MessageEvent<OCRInputEvent>) => {
 
   if (event.data.action === OCRAction.Predict) {
     try {
-      const output = await predict(event.data.file)
+      const output = await predict(event.data.image)
       globalThis.postMessage({
         status: WorkerStatus.Result,
         output,

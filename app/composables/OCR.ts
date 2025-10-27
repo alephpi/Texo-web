@@ -5,7 +5,8 @@ import {
   type WorkerProgressEvent,
   type WorkerReadyEvent,
   type OCRResult,
-  type WorkerResultEvent
+  type WorkerResultEvent,
+  type ModelConfig
 } from './types'
 import { WorkerProxy } from './workerProxy'
 import OCRWorker from './workers/ocr?worker'
@@ -18,6 +19,7 @@ export class OCR extends WorkerProxy<OCRResult> {
   }
 
   public async init(
+    model_config: ModelConfig,
     config?: {
       onProgress?: (progress: WorkerProgressEvent) => void
       signal?: AbortSignal
@@ -55,7 +57,8 @@ export class OCR extends WorkerProxy<OCRResult> {
       // send init request
       if (!this._initialized) {
         this.worker.postMessage({
-          action: OCRAction.Init
+          action: OCRAction.Init,
+          model_config
         })
         this._initialized = true
       }
@@ -104,14 +107,10 @@ export class OCR extends WorkerProxy<OCRResult> {
       })
 
       // send translate request after init
-      this.init({
-        onProgress: config?.onProgress
-      }).then(() => {
-        this.worker.postMessage({
-          action: OCRAction.Predict,
-          image,
-          key
-        })
+      this.worker.postMessage({
+        action: OCRAction.Predict,
+        image,
+        key
       })
     })
   }

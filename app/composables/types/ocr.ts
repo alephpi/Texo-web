@@ -18,7 +18,7 @@ export type OCRInitEvent = {
 
 export type OCRPredictEvent = {
   action: OCRAction.Predict
-  file: File
+  image: File
   key: string
 }
 

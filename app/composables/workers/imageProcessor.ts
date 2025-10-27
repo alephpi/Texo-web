@@ -1,11 +1,17 @@
-import { readImg, Image } from 'image-js'
+import { readImg, Image, readCanvas } from 'image-js'
 
 const UNIMERNET_MEAN = 0.7931
 const UNIMERNET_STD = 0.1738
 
 export async function preprocessImg(file: File) {
+  console.log('preprocessImg')
+  console.log(file)
   const img = await createImageBitmap(file)
-  let image = readImg(img)
+  const canvas = new OffscreenCanvas(img.width, img.height)
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, 0, 0)
+  let image = readCanvas(canvas)
+  console.log(image)
   image = cropMargin(image)
   image = resize(image, 384, 384)
   const array = normalize(image)

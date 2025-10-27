@@ -2,7 +2,8 @@
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
-import type { ModelConfig } from '../workers/ocr'
+import type { ProgressInfo } from '@huggingface/transformers'
+import type { ModelConfig } from '../composables/types'
 
 const { t } = useI18n()
 
@@ -117,37 +118,85 @@ const imageArray = ref<Float32Array | undefined>(undefined)
 
 async function onFileChange(newFile: File | null | undefined) {
   if (newFile) {
-    const { image, array } = await preprocessImg(newFile)
-    imageArray.value = array
+    // const { image, array } = await preprocessImg(newFile)
+    // imageArray.value = array
+    imageFile.value = newFile
   }
 }
 
-const use_ms_hub = ref(false)
+const use_mirror = ref(false)
+const progressInfo = ref<ProgressInfo>()
+const hasCached = ref(false)
+// hasCached.value = await checkCache()
 
-async function runOCR(imageArray: Float32Array, use_ms_hub: boolean) {
-  const model_config: ModelConfig = {
-    modelName: '../../models/model'
+// async function runOCR(
+//   imageArray: Float32Array,
+//   use_mirror: boolean
+// ) {
+//   let model_config: ModelConfig = {
+//     modelName: 'alephpi/FormulaNet',
+//     env_config: {
+//       remoteHost: 'https://huggingface.co/',
+//       remotePathTemplate: '{model}/resolve/{revision}'
+//     }
+//   }
+//   if (use_mirror) {
+//     model_config = {
+//       modelName: 'alephpi98/FormulaNet',
+//       env_config: {
+//         remoteHost: 'https://modelscope.cn/api/v1/models/',
+//         remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
+//       }
+//     }
+//   }
+//   console.log(model_config)
+//   const r = await fetch('https://gh.llkk.cc/https://raw.githubusercontent.com/alephpi/Texo-web/refs/heads/master/public/models/model/onnx/encoder_model.onnx')
+//   console.log(r.arrayBuffer())
+//   const ocrModelName = await loadModel(model_config, (info: ProgressInfo) => {
+//     progressInfo.value = info
+//     console.log(info)
+//   })
+//   latexCode.value = await ocr(imageArray, ocrModelName) || ''
+// }
+
+// const { init, predict, isReady } = useOCR({ global: true })
+const isLoading = ref(false)
+const loadingStatus = ref('')
+const loadingProgress = ref(0)
+
+const model_config: ModelConfig = {
+  modelName: 'alephpi/FormulaNet',
+  env_config: {
+    remoteHost: 'https://huggingface.co/',
+    remotePathTemplate: '{model}/resolve/{revision}'
   }
-  // let model_config: ModelConfig = {
-  //   modelName: 'alephpi/FormulaNet',
-  //   env_config: {
-  //     remoteHost: 'https://huggingface.co/',
-  //     remotePathTemplate: '{model}/resolve/{revision}'
-  //   }
-  // }
-  // if (use_ms_hub) {
-  //   model_config = {
-  //     modelName: 'alephpi98/FormulaNet',
-  //     env_config: {
-  //       remoteHost: 'https://modelscope.cn/api/v1/models/',
-  //       remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
-  //     }
-  //   }
-  // }
-  console.log(model_config)
-  // console.log(await fetch('https://www.modelscope.cn/api/v1/models/alephpi98/FormulaNet/repo?Revision=master&FilePath=onnx/generation_config.json'))
-  const ocrModelName = await loadModel(model_config)
-  latexCode.value = await ocr(imageArray, ocrModelName) || ''
+}
+// if (use_mirror.value) {
+//   model_config = {
+//     modelName: 'alephpi98/FormulaNet',
+//     env_config: {
+//       remoteHost: 'https://modelscope.cn/api/v1/models/',
+//       remotePathTemplate: '{model}/repo?Revision=master&FilePath=.' // the trailing dot should not be missed as the transformers.js would append a slash during url resolving.
+//     }
+//   }
+// }
+// 初始化模型
+const ocr = new OCR()
+const load = async (model_config: ModelConfig) => {
+  ocr.init(model_config)
+  console.log(ocr)
+  console.log('init!')
+  // const { progress, promise } = await init(model_config)
+  // console.log(progress)
+  // console.log(promise)
+}
+
+// 预测
+const runOCR = async (imageFile: File) => {
+  console.log('runOCR')
+  console.log(imageFile)
+  const result = await ocr.predict(imageFile)
+  if (result.status === 'result') latexCode.value = result.output || ''
 }
 </script>
 
@@ -217,6 +266,12 @@ async function runOCR(imageArray: Float32Array, use_ms_hub: boolean) {
             </div>
             <template #footer>
               <div class="flex justify-end">
+                <UBadge
+                  :color="hasCached ? 'success' : 'warning'"
+                  variant="subtle"
+                >
+                  {{ hasCached ? '已缓存' : '未缓存' }}
+                </UBadge>
                 <!-- <UButton
                 :label="t('load_test_image')"
                 @click="loadTestImage"
@@ -227,9 +282,13 @@ async function runOCR(imageArray: Float32Array, use_ms_hub: boolean) {
                   :description="t('is_cn_mainland')"
                 /> -->
                 <UButton
-                  :disabled="!imageArray"
+                  :label="t('load')"
+                  @click="load(model_config)"
+                />
+                <UButton
+                  :disabled="!imageFile"
                   :label="t('recognize')"
-                  @click="runOCR(imageArray, use_ms_hub)"
+                  @click="runOCR(imageFile!)"
                 />
               </div>
             </template>
