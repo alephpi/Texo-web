@@ -92,7 +92,7 @@ export class WorkerProxy<T = string> {
     this._callbacks.get(status)?.delete(callback)
   }
 
-  public teminate() {
+  public terminate() {
     this._worker.terminate()
     this._callbacks.clear()
   }
