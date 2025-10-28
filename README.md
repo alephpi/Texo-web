@@ -6,7 +6,8 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 - [ ] better formatting
 - [ ] support web-gpu
 - js related (PR welcome as I'm short of front-end skills.)
-    - [ ] model loading progress bar
+    - [x] model loading progress bar
+    - [x] support user from chinese mainland (by switching remote source)
     - [ ] model switching (support multiple models under a model manager singleton )
 
 ## Acknowledgement

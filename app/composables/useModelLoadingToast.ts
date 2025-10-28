@@ -1,14 +1,13 @@
 import type { ModelConfig } from './types'
 
-// composables/useModelLoadingToast.ts
-export const useModelLoadingToast = (model_config: ModelConfig, progress: Ref<Record<string, Record<string, number>>>, isReady: Ref<boolean>) => {
+export const useModelLoadingToast = (t, model_config: ModelConfig, progress: Ref<Record<string, Record<string, number>>>, isReady: Ref<boolean>) => {
   const toast = useToast()
   const unifiedProgress = ref({ loaded: 0, total: 0, progress: 0 })
   let toastId = 'model-loading'
 
   toast.add({
     id: toastId,
-    title: 'Loading model from' + ' ' + model_config.env_config?.remoteHost,
+    title: t('load_model_from') + ' ' + model_config.env_config?.remoteHost,
     duration: 0
   })
 
@@ -30,7 +29,7 @@ export const useModelLoadingToast = (model_config: ModelConfig, progress: Ref<Re
       if (!isReady.value && total > 0) {
         toastId = 'model-loading'
         toast.update(toastId, {
-          title: 'Loading model from' + ' ' + model_config.env_config?.remoteHost,
+          title: t('load_model_from') + ' ' + model_config.env_config?.remoteHost,
           description: `${(loaded / (1024 * 1024)).toFixed(2)} MB / ${(total / (1024 * 1024)).toFixed(2)} MB (${unifiedProgress.value.progress}%)`,
           duration: 0
         })
@@ -41,8 +40,8 @@ export const useModelLoadingToast = (model_config: ModelConfig, progress: Ref<Re
   watch(isReady, (ready) => {
     if (ready) {
       toast.update(toastId, {
-        title: 'Model loaded',
-        description: 'You can upload image',
+        title: t('model_loaded'),
+        description: t('you_can_upload_image_now'),
         duration: 0
       })
     }

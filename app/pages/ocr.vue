@@ -119,7 +119,7 @@ const runOCR = async (imageFile: File) => {
 
 onMounted(async () => {
   const model_config = await useSource()
-  useModelLoadingToast(model_config, progress, isReady)
+  useModelLoadingToast(t, model_config, progress, isReady)
   load(model_config)
 })
 </script>
