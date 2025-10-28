@@ -4,6 +4,7 @@ export type ModelConfig = {
     remoteHost: string
     remotePathTemplate: string
   }
+  test_link?: string
 }
 
 export enum OCRAction {

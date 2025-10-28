@@ -2,14 +2,12 @@
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { SelectItem } from '@nuxt/ui'
-import type { ProgressInfo } from '@huggingface/transformers'
 import type { ModelConfig } from '../composables/types'
 
 const { t } = useI18n()
+const toast = useToast()
 
 const latexCode = ref('')
-const toast = useToast() // 用于显示复制成功提示
-
 const renderedLatex = computed(() => {
   if (!latexCode.value) {
     return { renderResult: '', errorMessage: '' }
@@ -30,12 +28,6 @@ const renderedLatex = computed(() => {
   const errorMessage = errorSpan?.getAttribute('title')
   return { renderResult, errorMessage }
 })
-
-// 模型选项
-const modelOption = ref('texo-transfer-32bit-80MB')
-const modelOptions = ref<SelectItem[]> ([
-  { label: 'texo-transfer-32bit-80MB', value: 'alephpi/FormulaNet' }
-])
 
 // 包裹格式选项
 const wrapOptions = ref<SelectItem[]>([
@@ -82,24 +74,10 @@ async function copy() {
   }
 }
 
-// 标准化 LaTeX 代码(应用包裹到文本框)
+// 格式化 LaTeX 代码
 function format() {
   latexCode.value = formatLatex(latexCode.value)
 }
-
-// async function loadTestImage() {
-//   const urls = [
-//     'assets/test_img/单行公式.png',
-//     'assets/test_img/单行公式2.png',
-//     'assets/test_img/多行公式.png',
-//     'assets/test_img/多行公式2.jpg'
-//   ]
-//   const randomIndex = Math.floor(Math.random() * urls.length)
-//   const response = await fetch(urls[randomIndex])
-//   const blob = await response.blob()
-//   imageFile.value = new File([blob], 'test-image.jpg', { type: blob.type })
-//   console.log(imageFile.value)
-// }
 
 const imageFile = ref<File | null>(null)
 const imgHolder = ref(null)
@@ -111,58 +89,16 @@ function createObjectURL(file: File) {
 async function onFileChange(newFile: File | null | undefined) {
   if (newFile) {
     imageFile.value = newFile
+    runOCR(imageFile.value)
   }
 }
-
-const model_config: ModelConfig = {
-  modelName: 'alephpi/FormulaNet',
-  env_config: {
-    remoteHost: 'https://huggingface.co/',
-    remotePathTemplate: '{model}/resolve/{revision}'
-  }
-}
-
-// 初始化模型
 
 const { init, predict, progress, isReady } = useOCR()
-console.log('isReady', isReady.value)
 
-// const unifiedProgress = computed(() => {
-//   let total = 0
-//   let loaded = 1
-//   for (const key in progress.value) {
-//     const info = progress.value[key]!
-//     total += info.total!
-//     loaded += info.loaded!
-//   }
-//   const result = Math.round(loaded / total)
-//   return result
-// })
-const unifiedProgress = ref({
-  loaded: 0,
-  total: 0,
-  progress: 0
-})
-
-watch(progress, (record) => {
-  // we have 4 model files (encoder, decoder, config, generation_config) to download, the progress bar should be counted when all files start to download
-  let loaded = 0
-  let total = 0
-  if (Object.keys(record).length === 4) {
-    for (const key in record) {
-      console.log(key, record[key])
-      const info = progress.value[key]!
-      total += info.total!
-      loaded += info.loaded!
-    }
-    unifiedProgress.value = { loaded, total, progress: Math.round(100 * loaded / total) }
-  }
-}, { deep: true })
-// const ocr = new OCR()
 const load = async (model_config: ModelConfig) => {
   console.log('init')
   await init(model_config)
-  console.log('isReady', isReady.value)
+  console.log('model is ready', isReady.value)
 }
 
 // 预测
@@ -180,6 +116,12 @@ const runOCR = async (imageFile: File) => {
     })
   }
 }
+
+onMounted(async () => {
+  const model_config = await useSource()
+  useModelLoadingToast(model_config, progress, isReady)
+  load(model_config)
+})
 </script>
 
 <template>
@@ -246,48 +188,6 @@ const runOCR = async (imageFile: File) => {
                 </UFileUpload>
               </div>
             </div>
-            <template #footer>
-              <div class="flex justify-end">
-                <!-- <UBadge
-                  :color="hasCached ? 'success' : 'warning'"
-                  variant="subtle"
-                >
-                  {{ hasCached ? '已缓存' : '未缓存' }}
-                </UBadge> -->
-                <!-- <UButton
-                :label="t('load_test_image')"
-                @click="loadTestImage"
-              /> -->
-                <!-- <UCheckbox
-                  v-model="use_ms_hub"
-                  :label="t('use_ms_hub')"
-                  :description="t('is_cn_mainland')"
-                /> -->
-
-                <div
-                  class="space-y-4 p-4"
-                >
-                  <div v-if="unifiedProgress.total !== 0">
-                    <span> Loading model </span>
-                    <UProgress
-                      :model-value="unifiedProgress.progress"
-                      status
-                      size="sm"
-                    />
-                    <span class="text-sm text-gray-500">{{ (unifiedProgress.loaded / (1024 * 1024)).toFixed(2) }} M / {{ (unifiedProgress.total / (1024 * 1024)).toFixed(2) }} M</span>
-                  </div>
-                  <UButton
-                    :label="t('load')"
-                    @click="load(model_config)"
-                  />
-                  <UButton
-                    :disabled="!imageFile"
-                    :label="t('recognize')"
-                    @click="runOCR(imageFile!)"
-                  />
-                </div>
-              </div>
-            </template>
           </UCard>
         </div>
 
