@@ -8,6 +8,7 @@ export const useModelLoadingToast = (t, model_config: ModelConfig, progress: Ref
   toast.add({
     id: toastId,
     title: t('load_model_from') + ' ' + model_config.env_config?.remoteHost,
+    color: 'info',
     duration: 0
   })
 
@@ -31,6 +32,7 @@ export const useModelLoadingToast = (t, model_config: ModelConfig, progress: Ref
         toast.update(toastId, {
           title: t('load_model_from') + ' ' + model_config.env_config?.remoteHost,
           description: `${(loaded / (1024 * 1024)).toFixed(2)} MB / ${(total / (1024 * 1024)).toFixed(2)} MB (${unifiedProgress.value.progress}%)`,
+          color: 'info',
           duration: 0
         })
       }
@@ -42,6 +44,7 @@ export const useModelLoadingToast = (t, model_config: ModelConfig, progress: Ref
       toast.update(toastId, {
         title: t('model_loaded'),
         description: t('you_can_upload_image_now'),
+        color: 'success',
         duration: 0
       })
     }

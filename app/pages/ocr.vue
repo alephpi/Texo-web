@@ -104,15 +104,27 @@ const load = async (model_config: ModelConfig) => {
 // 预测
 const runOCR = async (imageFile: File) => {
   console.log('predict')
+  toast.add({
+    id: 'predict',
+    title: t('recognizing'),
+    color: 'info',
+    duration: 0
+  })
   const result = await predict(imageFile)
+  console.log(progress.value)
   if (result.status === 'result') {
     latexCode.value = result.output || ''
+    toast.update('predict', {
+      title: t('recognize_success'),
+      color: 'success',
+      duration: 1500
+    })
   } else {
-    toast.add({
-      title: '识别失败',
-      description: result.output || '未知错误',
+    toast.update('predict', {
+      title: t('recognition_failed'),
+      description: result.output || t('unknown_error'),
       color: 'error',
-      duration: 1000
+      duration: 0
     })
   }
 }

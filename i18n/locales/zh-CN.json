@@ -21,7 +21,10 @@
   "load_model_from": "加载模型自",
   "model_loaded": "模型已加载",
   "you_can_upload_image_now": "现在你可以上传图片了",
-  "predicting": "正在推理",
+  "recognizing": "正在识别...",
+  "recognize_success": "识别成功",
+  "recognize_failed": "识别失败",
+  "unknown_error": "未知错误",
   "info": {
     "title": "Image Information",
     "filename": "Filename",

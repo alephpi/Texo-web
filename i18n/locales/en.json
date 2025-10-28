@@ -21,7 +21,10 @@
   "load_model_from": "Load model from",
   "model_loaded": "Model loaded",
   "you_can_upload_image_now": "You can upload image now",
-  "predicting": "Predicting",
+  "recognizing": "Recognizing...",
+  "recognize_success": "Recognition succeed",
+  "recognize_failed": "Recognition failed",
+  "unknown_error": "Unknown error",
   "info": {
     "title": "Image Information",
     "filename": "Filename",
