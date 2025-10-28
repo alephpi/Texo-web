@@ -11,11 +11,12 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
     - [ ] model switching (support multiple models under a model manager singleton )
 
 ## Acknowledgement
-- Texo: pretrained LaTeX OCR model
+- [Texo](https://github.com/alephpi/Texo): pretrained LaTeX OCR model
 - Transformers.js: pipeline
 - Vue: JS framework
 - Nuxt: meta-framework, UI template and components
-- nuxt-workers: handle model loading, predicting and data processing task with web worker.
+- [Volver.js](https://github.com/volverjs/ai): web worker
+- Giscus: comment system
 
 ## Develop
 
