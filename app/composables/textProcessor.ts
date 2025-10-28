@@ -7,7 +7,7 @@
 export function wrapCode(code: string, wrapOption: string | null): string {
   const cleanCode = code.trim()
 
-  if (!wrapOption || wrapOption === 'none') {
+  if (!wrapOption) {
     return cleanCode
   }
 

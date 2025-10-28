@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
-import type { SelectItem } from '@nuxt/ui'
+import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
 
 const { t } = useI18n()
@@ -30,45 +30,40 @@ const renderedLatex = computed(() => {
 })
 
 // 包裹格式选项
-const wrapOptions = ref<SelectItem[]>([
-  { label: 'none', value: 'none' },
-  { label: '$', value: '$...$' },
-  { label: '$$', value: '$$...$$' },
-  { label: '\\( \\)', value: '\\(...\\)' },
-  { label: '\\[ \\]', value: '\\[...\\]' },
-  { label: 'align env', value: '\\begin{align}\n...\n\\end{align}' },
-  { label: 'equation env', value: '\\begin{equation}\n...\n\\end{equation}' }
-])
-const wrapOption = ref<string | null>(null)
+const wrap_format_options = [
+  '$...$',
+  '$$...$$',
+  '\\(...\\)',
+  '\\[...\\]',
+  '\\begin{align}\n...\n\\end{align}',
+  '\\begin{equation}\n...\n\\end{equation}'
+]
 
-async function copy() {
-  if (!latexCode.value) {
-    toast?.add({
-      title: '没有可复制的内容',
-      color: 'warning',
-      duration: 1000,
-      progress: false
-    })
-    return
+const wrap_format_menu: DropdownMenuItem[] = wrap_format_options.map(
+  (option) => {
+    return {
+      label: option,
+      onSelect: () => copy(option)
+    }
   }
+)
 
+async function copy(wrap_format: string | null = null) {
   try {
-    const wrappedCode = wrapCode(latexCode.value, wrapOption.value)
+    const wrappedCode = wrapCode(latexCode.value, wrap_format)
     await navigator.clipboard.writeText(wrappedCode)
 
     toast?.add({
-      title: '复制成功',
-      description: `已复制 ${wrapOption.value} 格式`,
+      title: wrap_format ? t('copied_with_format') + ' ' + wrap_format : t('copied'),
       color: 'success',
-      duration: 1000,
+      duration: 1500,
       progress: false
     })
   } catch {
     toast?.add({
-      title: '复制失败',
-      description: '请手动复制',
+      title: t('copy_failed'),
       color: 'error',
-      duration: 1000,
+      duration: 1500,
       progress: false
     })
   }
@@ -251,25 +246,39 @@ onMounted(async () => {
             <template #footer>
               <div class="flex justify-between items-center">
                 <div class="flex gap-2">
-                  <!-- 复制按钮 -->
-                  <USelect
-                    v-model="wrapOption"
-                    value-key="value"
-                    :placeholder="t('copy_with_format') "
-                    :items="wrapOptions"
-                    size="sm"
-                    class="w-35"
-                  />
-                  <UButton
-                    :disabled="!wrapOption"
-                    icon="i-carbon-copy"
-                    size="sm"
-                    @click="copy"
-                  >
-                    {{ t('copy') }}
-                  </UButton>
+                  <UFieldGroup>
+                    <UButton
+                      :disabled="!latexCode"
+                      icon="i-carbon-copy"
+                      size="sm"
+                      @click="copy()"
+                    >
+                      {{ t('copy') }}
+                    </UButton>
+                    <UDropdownMenu
+                      :items="wrap_format_menu"
+                      :content="{
+                        align: 'end',
+                        side: 'bottom',
+                        sideOffset: 8
+                      }"
+                      :ui="{
+                        content: 'w-auto'
+                      }"
+                    >
+                      <UTooltip
+                        :text="t('copy_with_format')"
+                        :delay-duration="0"
+                      >
+                        <UButton
+                          :disabled="!latexCode"
+                          icon="i-lucide-chevron-down"
+                          size="sm"
+                        />
+                      </UTooltip>
+                    </UDropdownMenu>
+                  </UFieldGroup>
 
-                  <!-- 标准化按钮 -->
                   <UButton
                     :disabled="!latexCode"
                     icon="i-carbon-edit"
