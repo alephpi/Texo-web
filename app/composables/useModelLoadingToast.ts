@@ -5,12 +5,14 @@ export const useModelLoadingToast = (t, model_config: ModelConfig, progress: Ref
   const unifiedProgress = ref({ loaded: 0, total: 0, progress: 0 })
   let toastId = 'model-loading'
 
-  toast.add({
-    id: toastId,
-    title: t('load_model_from') + ' ' + model_config.env_config?.remoteHost,
-    color: 'info',
-    duration: 0
-  })
+  if (!isReady.value) {
+    toast.add({
+      id: toastId,
+      title: t('load_model_from') + ' ' + model_config.env_config?.remoteHost,
+      color: 'info',
+      duration: 0
+    })
+  }
 
   watch(progress, (record) => {
     let loaded = 0

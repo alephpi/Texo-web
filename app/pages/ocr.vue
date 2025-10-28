@@ -105,30 +105,31 @@ const runOCR = async (imageFile: File) => {
     color: 'info',
     duration: 0
   })
+
+  const start = performance.now()
   const result = await predict(imageFile)
-  console.log(progress.value)
+  const elapsedMs = performance.now() - start
+  const timeStr = elapsedMs < 1000 ? `${Math.round(elapsedMs)} ms` : `${(elapsedMs / 1000).toFixed(2)} s`
+
   if (result.status === 'result') {
     latexCode.value = result.output || ''
     toast.update('predict', {
-      title: t('recognize_success'),
+      title: t('recognize_success') + ' ' + timeStr,
       color: 'success',
       duration: 1500
     })
   } else {
     toast.update('predict', {
-      title: t('recognition_failed'),
-      description: result.output || t('unknown_error'),
+      title: t('recognition_failed') + ` ${result.output || t('unknown_error')} (${timeStr})`,
       color: 'error',
       duration: 0
     })
   }
 }
 
-onMounted(async () => {
-  const model_config = await useSource()
-  useModelLoadingToast(t, model_config, progress, isReady)
-  load(model_config)
-})
+const model_config = await useSource()
+useModelLoadingToast(t, model_config, progress, isReady)
+await load(model_config)
 </script>
 
 <template>
