@@ -14,10 +14,10 @@ const RemoteSource: Record<Region, ModelConfig> = {
   cn: {
     modelName: 'alephpi/FormulaNet',
     env_config: {
-      remoteHost: 'https://gh.llkk.cc/https://github.com/',
-      remotePathTemplate: 'alephpi/Texo-web/raw/refs/heads/master/models/models'
+      remoteHost: 'https://gh.llkk.cc/https://raw.githubusercontent.com/',
+      remotePathTemplate: 'alephpi/Texo-web/refs/heads/master/models/model/'
     },
-    test_link: 'https://gh.llkk.cc/https://github.com/alephpi/Texo-web/raw/refs/heads/master/models/model/config.json'
+    test_link: 'https://gh.llkk.cc/https://raw.githubusercontent.com/alephpi/Texo-web/refs/heads/master/models/model/config.json'
   }
 }
 
