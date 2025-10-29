@@ -127,6 +127,45 @@ const runOCR = async (imageFile: File) => {
   }
 }
 
+// 处理全局粘贴事件
+const handlePaste = async (event: ClipboardEvent) => {
+  const target = event.target as HTMLElement
+  if (
+    target.tagName === 'TEXTAREA'
+    || target.tagName === 'INPUT'
+    || target.isContentEditable
+  ) {
+    return
+  }
+
+  console.log('paste event detected')
+  const items = event.clipboardData?.items
+  if (!items || items.length === 0) return
+
+  const item = items[0]!
+  if (item.type.indexOf('image') !== -1) {
+    event.preventDefault() // 阻止默认粘贴行为
+
+    const file = item.getAsFile()
+    if (file) {
+      const timestamp = new Date().getTime()
+      const imageFileWithName = new File([file], `pasted-image-${timestamp}.png`, {
+        type: file.type
+      })
+      await onFileChange(imageFileWithName)
+    }
+  }
+}
+
+// 监听全局粘贴事件
+onMounted(() => {
+  window.addEventListener('paste', handlePaste)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('paste', handlePaste)
+})
+
 const model_config = await useSource()
 useModelLoadingToast(t, model_config, progress, isReady)
 await load(model_config)
