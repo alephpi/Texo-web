@@ -74,6 +74,10 @@ function format() {
   latexCode.value = formatLatex(latexCode.value)
 }
 
+function clear() {
+  latexCode.value = ''
+}
+
 const imageFile = ref<File | null>(null)
 const imgHolder = ref(null)
 
@@ -326,6 +330,14 @@ await load(model_config)
                     @click="format"
                   >
                     {{ t('format') }}
+                  </UButton>
+                  <UButton
+                    :disabled="!latexCode"
+                    icon="i-carbon-erase"
+                    size="sm"
+                    @click="clear"
+                  >
+                    {{ t('clear') }}
                   </UButton>
                 </div>
               </div>
