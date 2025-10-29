@@ -3,6 +3,7 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
+import { on } from 'events'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -91,6 +92,25 @@ async function onFileChange(newFile: File | null | undefined) {
     runOCR(imageFile.value)
   }
 }
+
+const loadTestImage = (() => {
+  let idx = 0
+  const urls = [
+    'assets/test_img/单行公式.png',
+    'assets/test_img/单行公式2.png',
+    'assets/test_img/多行公式.png',
+    'assets/test_img/多行公式2.jpg'
+  ]
+
+  return async function () {
+    const response = await fetch(urls[idx]!)
+    const blob = await response.blob()
+    imageFile.value = new File([blob], 'test-image.jpg', { type: blob.type })
+    await onFileChange(imageFile.value)
+
+    idx = (idx + 1) % urls.length
+  }
+})()
 
 const { init, predict, progress, isReady } = useOCR()
 
@@ -223,10 +243,17 @@ await load(model_config)
                   highlight
                   accept="image/*"
                   :label="t('uploader_label')"
-                  :description="t('uploader_description')"
                   :ui="{ base: 'w-96 h-96 flex-auto' }"
                   @update:model-value="onFileChange"
                 >
+                  <template #description>
+                    <p
+                      class="text-center"
+                      style="white-space: pre-line;"
+                    >
+                      {{ t('uploader_description') }}
+                    </p>
+                  </template>
                   <template #file-leading="{ file }">
                     <UAvatar
                       id="image-holder"
@@ -238,6 +265,13 @@ await load(model_config)
                   </template>
                 </UFileUpload>
               </div>
+            </div>
+            <div class="flex justify-center items-center">
+              <UButton
+                :label="t('upload_example')"
+                color="secondary"
+                @click="loadTestImage()"
+              />
             </div>
           </UCard>
         </div>
