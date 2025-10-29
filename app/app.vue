@@ -1,4 +1,9 @@
 <script setup>
+import avatar from '~/assets/svg/avatar.svg'
+import avatarDark from '~/assets/svg/avatar-dark.svg'
+
+const colorMode = useColorMode()
+
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -32,7 +37,7 @@ useSeoMeta({
       <NuxtPage />
     </UMain>
 
-    <USeparator icon="i-simple-icons-nuxtdotjs" />
+    <USeparator :avatar="{ src: colorMode.value === 'dark' ? avatarDark :avatar }" />
 
     <UFooter>
       <template #left>

@@ -12,22 +12,24 @@
       <p class="text-center m-4">
         {{ t('comment_welcome') }}
       </p>
-      <Giscus
-        repo="alephpi/Texo-web"
-        repo-id="R_kgDOP9fzIA"
-        category-id="DIC_kwDOP9fzIM4CxKyD"
-        mapping="specific"
-        term="Welcome to Texo-web"
-        strict="0"
-        reactions-enabled="1"
-        emit-metadata="0"
-        input-position="top"
-        :theme="colorMode.value"
-        :lang="locale"
-        loading="lazy"
-        crossorigin="anonymous"
-        async
-      />
+      <div class="mt-10 mb-20">
+        <Giscus
+          repo="alephpi/Texo-web"
+          repo-id="R_kgDOP9fzIA"
+          category-id="DIC_kwDOP9fzIM4CxKyD"
+          mapping="specific"
+          term="Welcome to Texo-web"
+          strict="0"
+          reactions-enabled="1"
+          emit-metadata="0"
+          input-position="top"
+          :theme="colorMode.value"
+          :lang="locale"
+          loading="lazy"
+          crossorigin="anonymous"
+          async
+        />
+      </div>
     </UContainer>
   </UPage>
 </template>
