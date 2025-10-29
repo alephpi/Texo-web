@@ -47,7 +47,8 @@ export const useModelLoadingToast = (t, model_config: ModelConfig, progress: Ref
         title: t('model_loaded'),
         description: t('you_can_upload_image_now'),
         color: 'success',
-        duration: 0
+        duration: 5000,
+        progress: true
       })
     }
   })

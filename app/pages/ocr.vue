@@ -297,14 +297,3 @@ await load(model_config)
     </UPageBody>
   </UPage>
 </template>
-
-<style scoped>
-button:disabled {
-  background-color: #9ca3af; /* gray-400 */
-  opacity: 1;
-}
-
-button[aria-disabled="true"] {
-  opacity: 1;
-}
-</style>
