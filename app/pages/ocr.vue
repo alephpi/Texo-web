@@ -3,7 +3,6 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
-import { on } from 'events'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -123,6 +122,7 @@ const load = async (model_config: ModelConfig) => {
 // 预测
 const runOCR = async (imageFile: File) => {
   console.log('predict')
+  toast.clear()
   toast.add({
     id: 'predict',
     title: t('recognizing'),
