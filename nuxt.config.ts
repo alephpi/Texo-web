@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxtjs/i18n'
   ],
-  ssr: false,
+  ssr: true,
   components: true,
 
   devtools: {
@@ -13,11 +13,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-
-  routeRules: {
-    '/': { prerender: true }
-  },
-
   compatibilityDate: '2025-01-15',
   eslint: {
     config: {
