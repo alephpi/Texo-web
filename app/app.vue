@@ -25,9 +25,10 @@ useSeoMeta({
   description,
   ogTitle: title,
   ogDescription: description,
-  ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
-  twitterImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
-  twitterCard: 'summary_large_image'
+  ogImage: 'https://raw.githubusercontent.com/alephpi/Texo-web/master/texo-og-image.png',
+  twitterImage: 'https://raw.githubusercontent.com/alephpi/Texo-web/master/texo-og-image.png',
+  twitterCard: 'summary_large_image',
+  robots: 'index, follow'
 })
 </script>
 
