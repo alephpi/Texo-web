@@ -6,7 +6,8 @@ const colorMode = useColorMode()
 
 useHead({
   meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { name: 'google-site-verification', content: 'XkBVxrbdbp4Mzt-PclbWpD5ScP56_S2cs1QqLq4OhYM' }
   ],
   link: [
     { rel: 'icon', href: '/favicon.ico' }
