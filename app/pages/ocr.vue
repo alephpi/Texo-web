@@ -3,6 +3,7 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
+import type { ProseFieldGroupProps } from '@nuxt/ui/runtime/types/prose.js'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -111,48 +112,9 @@ const loadTestImage = (() => {
   }
 })()
 
-const { init, predict, progress, isReady } = useOCR()
-
-const load = async (model_config: ModelConfig) => {
-  console.log('init')
-  await init(model_config)
-  console.log('model is ready', isReady.value)
-}
-
-// 预测
-const runOCR = async (imageFile: File) => {
-  console.log('predict')
-  toast.clear()
-  toast.add({
-    id: 'predict',
-    title: t('recognizing'),
-    color: 'info',
-    duration: 0
-  })
-
-  const start = performance.now()
-  const result = await predict(imageFile)
-  const elapsedMs = performance.now() - start
-  const timeStr = elapsedMs < 1000 ? `${Math.round(elapsedMs)} ms` : `${(elapsedMs / 1000).toFixed(2)} s`
-
-  if (result.status === 'result') {
-    latexCode.value = result.output || ''
-    toast.update('predict', {
-      title: t('recognize_success') + ' ' + timeStr,
-      color: 'success',
-      duration: 1500
-    })
-  } else {
-    toast.update('predict', {
-      title: t('recognition_failed') + ` ${result.output || t('unknown_error')} (${timeStr})`,
-      color: 'error',
-      duration: 0
-    })
-  }
-}
-
 // 处理全局粘贴事件
 const handlePaste = async (event: ClipboardEvent) => {
+  if (!import.meta.client) return
   const target = event.target as HTMLElement
   if (
     target.tagName === 'TEXTAREA'
@@ -181,18 +143,59 @@ const handlePaste = async (event: ClipboardEvent) => {
   }
 }
 
-// 监听全局粘贴事件
-onMounted(() => {
+let load: (model_config: ModelConfig) => Promise<void>
+let runOCR: (imageFile: File) => Promise<void>
+
+// 在客户端挂载后初始化
+onMounted(async () => {
+  const { init, predict, isReady, progress } = useOCR()
+
+  load = async (model_config: ModelConfig) => {
+    console.log('init')
+    await init(model_config)
+    console.log('model is ready', isReady.value)
+  }
+
+  runOCR = async (imageFile: File) => {
+    console.log('predict')
+    toast.clear()
+    toast.add({
+      id: 'predict',
+      title: t('recognizing'),
+      color: 'info',
+      duration: 0
+    })
+
+    const start = performance.now()
+    const result = await predict(imageFile)
+    const elapsedMs = performance.now() - start
+    const timeStr = elapsedMs < 1000 ? `${Math.round(elapsedMs)} ms` : `${(elapsedMs / 1000).toFixed(2)} s`
+
+    if (result.status === 'result') {
+      latexCode.value = result.output || ''
+      toast.update('predict', {
+        title: t('recognize_success') + ' ' + timeStr,
+        color: 'success',
+        duration: 1500
+      })
+    } else {
+      toast.update('predict', {
+        title: t('recognition_failed') + ` ${result.output || t('unknown_error')} (${timeStr})`,
+        color: 'error',
+        duration: 0
+      })
+    }
+  }
   window.addEventListener('paste', handlePaste)
+
+  const model_config = await useSource()
+  useModelLoadingToast(t, model_config, progress, isReady)
+  await load(model_config)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('paste', handlePaste)
 })
-
-const model_config = await useSource()
-useModelLoadingToast(t, model_config, progress, isReady)
-await load(model_config)
 </script>
 
 <template>
