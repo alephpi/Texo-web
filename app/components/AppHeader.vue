@@ -50,6 +50,10 @@ const items = computed<NavigationMenuItem[]>(() => [{
         color="neutral"
         variant="ghost"
       />
+      <img
+        alt="GitHub Repo stars"
+        src="https://img.shields.io/github/stars/alephpi/Texo"
+      >
     </template>
   </UHeader>
 </template>
