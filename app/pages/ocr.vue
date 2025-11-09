@@ -3,7 +3,6 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
-import type { ProseFieldGroupProps } from '@nuxt/ui/runtime/types/prose.js'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -57,15 +56,13 @@ async function copy(wrap_format: string | null = null) {
     toast?.add({
       title: wrap_format ? t('copied_with_format') + ' ' + wrap_format : t('copied'),
       color: 'success',
-      duration: 1500,
-      progress: false
+      duration: 1500
     })
   } catch {
     toast?.add({
       title: t('copy_failed'),
       color: 'error',
-      duration: 1500,
-      progress: false
+      duration: 1500
     })
   }
 }
@@ -77,6 +74,27 @@ function format() {
 
 function clear() {
   latexCode.value = ''
+}
+
+async function copyAsTypst() {
+  try {
+    const typstCode = convertToTypst(latexCode.value)
+    await navigator.clipboard.writeText(typstCode)
+    toast?.add({
+      title: t('typstCode') + ' ' + t('copied'),
+      color: 'success',
+      duration: 1500
+    })
+  } catch (err) {
+    console.log(err)
+    toast?.add({
+      title: t('convert_to') + ' ' + t('typstCode') + ' ' + t('failed'),
+      description: String(err),
+      color: 'error',
+      duration: 0,
+      progress: false
+    })
+  }
 }
 
 const imageFile = ref<File | null>(null)
@@ -375,6 +393,14 @@ onBeforeUnmount(() => {
                     @click="clear"
                   >
                     {{ t('clear') }}
+                  </UButton>
+                  <UButton
+                    :disabled="!latexCode"
+                    icon="i-carbon-transform-code"
+                    size="sm"
+                    @click="copyAsTypst"
+                  >
+                    {{ t('copyAs') + t('typstCode') }}
                   </UButton>
                 </div>
               </div>

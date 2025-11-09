@@ -1,3 +1,5 @@
+import { tex2typst } from 'tex2typst'
+
 /**
  * 包裹 LaTeX 代码
  * @param code - 原始 LaTeX 代码
@@ -114,4 +116,9 @@ export function formatLatex(code: string): string {
 
   // 去掉空行
   return result.filter(line => line.trim()).join('\n')
+}
+
+export function convertToTypst(code: string) {
+  const cleanedCode = code.replace(/~/g, '\\ ')
+  return tex2typst(cleanedCode)
 }
