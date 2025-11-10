@@ -185,6 +185,13 @@ onMounted(async () => {
     })
 
     const start = performance.now()
+
+    // preprocess for svg format, since the createImageBitmap doesn't accept svg format
+    // console.log(imageFile)
+    if (imageFile.type === 'image/svg+xml') {
+      imageFile = await convertSvgToPng(imageFile)
+      // console.log(imageFile)
+    }
     const result = await predict(imageFile)
     const elapsedMs = performance.now() - start
     const timeStr = elapsedMs < 1000 ? `${Math.round(elapsedMs)} ms` : `${(elapsedMs / 1000).toFixed(2)} s`

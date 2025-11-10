@@ -9,6 +9,9 @@ export async function preprocessImg(file: File) {
   const img = await createImageBitmap(file)
   const canvas = new OffscreenCanvas(img.width, img.height)
   const ctx = canvas.getContext('2d')!
+  // prefill background, fix transparent background issue
+  ctx.fillStyle = 'white'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
   ctx.drawImage(img, 0, 0)
   // readCanvas actually also accepts an OffscreenCanvas, it's simply a matter of type annotation
   let image = readCanvas(canvas as unknown as HTMLCanvasElement)
