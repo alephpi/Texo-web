@@ -62,3 +62,9 @@ pnpm preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## License
+
+AGPL-3.0
+
+Copyright (C) 2025-present Sicheng Mao maosicheng98@gmail.com
