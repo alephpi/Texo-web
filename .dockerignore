@@ -1,0 +1,8 @@
+node_modules
+*.md
+dist
+.git*
+.vscode
+.env
+.DS_Store
+test
