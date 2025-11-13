@@ -36,7 +36,7 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Texo - LaTeX OCR',
+      name: 'Texo In-browser LaTeX OCR',
       short_name: 'Texo',
       description: 'In-browser LaTeX formula OCR tool',
       theme_color: '#10B981',
@@ -58,14 +58,13 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,wasm,css,html,png,svg,ico}'],
-      maximumFileSizeToCacheInBytes: 25 * 1024 * 1024
+      globPatterns: ['**/*.{js,json,css,html,txt,svg,png,ico,webp,woff,woff2,ttf,eot,otf,wasm}'],
+      maximumFileSizeToCacheInBytes: 25 * 1024 * 1024 // 25MB
       // 不添加 runtimeCaching，让 @huggingface/transformers 自己管理模型缓存
     },
     client: {
       installPrompt: true,
-      periodicSyncForUpdates: 3600 // 每小时检查更新
+      periodicSyncForUpdates: 60 * 60 * 24 // per day
     },
     devOptions: {
       enabled: true,
