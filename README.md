@@ -14,7 +14,7 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 - [ ] better formatting
 - [ ] web-gpu
 - [ ] streaming output
-- [ ] pwa
+- [x] pwa
 - [x] typst conversion
 
 ## Acknowledgement
