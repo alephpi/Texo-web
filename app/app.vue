@@ -23,6 +23,8 @@ const description = 'In-browser LaTeX OCR'
 useSeoMeta({
   title,
   description,
+  ogUrl: 'https://texocr.netlify.app',
+  ogType: 'website',
   ogTitle: title,
   ogDescription: description,
   ogImage: 'https://raw.githubusercontent.com/alephpi/Texo-web/master/texo-og-image.png',
