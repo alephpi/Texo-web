@@ -1,4 +1,5 @@
 import { tex2typst } from 'tex2typst'
+import { Latex2TypstTool } from './types/pandoc'
 
 /**
  * 包裹 LaTeX 代码
@@ -118,7 +119,41 @@ export function formatLatex(code: string): string {
   return result.filter(line => line.trim()).join('\n')
 }
 
-export function convertToTypst(code: string) {
+let lastInput: string | null = null
+let lastOutput: string | null = null
+
+export async function convertToTypst(code: string, tool: Latex2TypstTool = Latex2TypstTool.Pandoc): Promise<string> {
   const cleanedCode = code.replace(/~/g, '\\ ')
-  return tex2typst(cleanedCode)
+  const cacheKey = `${tool}:${cleanedCode.trim()}`
+
+  if (lastInput === cacheKey && lastOutput !== null) {
+    if (import.meta.client) {
+      console.log(`[convertToTypst] Cache hit: same input as last conversion`)
+    }
+    return lastOutput
+  }
+  let result: string
+  switch (tool) {
+    case Latex2TypstTool.Pandoc:
+      const response = await $fetch<{ success: boolean; output: string }>('/api/convert/typst', {
+        method: 'POST',
+        body: { latex: cleanedCode }
+      })
+      if (response.success) {
+        result = response.output
+      } else {
+        throw new Error('Pandoc conversion failed')
+      }
+      break
+    case Latex2TypstTool.Tex2Typst:
+      result = tex2typst(cleanedCode)
+      break
+    default:
+      throw new Error(`Unknown conversion tool: ${tool}`)
+  }
+
+  lastInput = cacheKey
+  lastOutput = result
+
+  return result
 }
