@@ -7,14 +7,15 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 > 很荣幸被 [《阮一峰的科技周刊》](https://www.ruanyifeng.com/blog/2025/11/weekly-issue-372.html) 收录，如果你从那里过来，并且在访问 demo 网站时出现 bug，请移步至 [Texo-web](https://github.com/alephpi/Texo-web) 仓库报告。由于我前端水平有限，欢迎各位不吝赐教。
 
 ## Todo
+- [x] support user from chinese mainland (by switching remote source)
+- [x] model loading progress bar
+- [ ] model switching (support multiple models under a model manager singleton)
 - [ ] array environment conversion to aligned and so on.
 - [ ] better formatting
-- [ ] support web-gpu
-- [x] support typst conversion
-- js related (PR welcome as I'm short of front-end skills.)
-    - [x] model loading progress bar
-    - [x] support user from chinese mainland (by switching remote source)
-    - [ ] model switching (support multiple models under a model manager singleton)
+- [ ] web-gpu
+- [ ] streaming output
+- [x] pwa
+- [x] typst conversion
 
 ## Acknowledgement
 - [Texo](https://github.com/alephpi/Texo): pretrained LaTeX OCR model
@@ -62,6 +63,9 @@ pnpm preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+> [!Note]
+> Pay attention that `pnpm preview` would listen on `http://[::]:3000` while this is not a secure context for `caches` api, and you will get `500: internal server error` which is due to either `insecure server` or `caches not defined` error, instead you need to visit `localhost:3000` as it is secure for the browser.
 
 ## License
 

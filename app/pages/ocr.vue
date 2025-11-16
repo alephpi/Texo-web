@@ -407,7 +407,7 @@ onBeforeUnmount(() => {
                     size="sm"
                     @click="copyAsTypst"
                   >
-                    {{ t('copyAs') + t('typstCode') }}
+                    {{ t('copyAs') + ' ' + t('typstCode') }}
                   </UButton>
                 </div>
               </div>
