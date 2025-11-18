@@ -342,12 +342,10 @@ onBeforeUnmount(() => {
                 {{ t('edit_title') }}
               </h2>
             </template>
-            <UTextarea
+            <SyntaxHighlightedTextArea
               v-model="latexCode"
               :rows="8"
               :placeholder="t('edit_placeholder')"
-              autoresize
-              class="font-mono w-full"
             />
             <template #footer>
               <div class="flex justify-between items-center">
