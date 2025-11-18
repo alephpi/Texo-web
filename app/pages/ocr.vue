@@ -107,7 +107,8 @@ function createObjectURL(file: File) {
 async function onFileChange(newFile: File | null | undefined) {
   if (newFile) {
     imageFile.value = newFile
-    runOCR(imageFile.value)
+    await runOCR(imageFile.value)
+    format()
   }
 }
 
@@ -383,14 +384,14 @@ onBeforeUnmount(() => {
                     </UDropdownMenu>
                   </UFieldGroup>
 
-                  <UButton
+                  <!-- <UButton
                     :disabled="!latexCode"
                     icon="i-carbon-edit"
                     size="sm"
                     @click="format"
                   >
                     {{ t('format') }}
-                  </UButton>
+                  </UButton> -->
                   <UButton
                     :disabled="!latexCode"
                     icon="i-carbon-erase"

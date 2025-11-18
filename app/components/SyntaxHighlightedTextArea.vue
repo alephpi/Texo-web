@@ -70,7 +70,7 @@ const highlightCode = (code: string) => {
   const highlighted = code.replace(/([{}])/g, (match) => {
     return `<span style="color: ${braceColor.value};">${match}</span>`
   })
-  console.log(highlighted)
+  //   console.log(highlighted)
 
   highlightedCode.value = highlighted
 }

@@ -9,9 +9,9 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 ## Todo
 - [x] support user from chinese mainland (by switching remote source)
 - [x] model loading progress bar
+- [x] better formatting
 - [ ] model switching (support multiple models under a model manager singleton)
 - [ ] array environment conversion to aligned and so on.
-- [ ] better formatting
 - [ ] web-gpu
 - [ ] streaming output
 - [x] pwa
