@@ -13,7 +13,7 @@
       :value="modelValue"
       :placeholder="placeholder"
       :rows="rows"
-      class="syntax-textarea font-mono w-full"
+      class="syntax-textarea w-full"
       @input="onInput"
       @scroll="syncScroll"
     />
@@ -156,6 +156,7 @@ watch(() => colorMode.value, () => {
   resize: vertical;
   outline: none;
   line-height: 1.5;
+  font-family: ui-monospace, monospace;
   overflow: auto;
 }
 
