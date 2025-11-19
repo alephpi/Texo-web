@@ -107,7 +107,8 @@ function createObjectURL(file: File) {
 async function onFileChange(newFile: File | null | undefined) {
   if (newFile) {
     imageFile.value = newFile
-    runOCR(imageFile.value)
+    await runOCR(imageFile.value)
+    format()
   }
 }
 
@@ -342,12 +343,10 @@ onBeforeUnmount(() => {
                 {{ t('edit_title') }}
               </h2>
             </template>
-            <UTextarea
+            <SyntaxHighlightedTextArea
               v-model="latexCode"
               :rows="8"
               :placeholder="t('edit_placeholder')"
-              autoresize
-              class="font-mono w-full"
             />
             <template #footer>
               <div class="flex justify-between items-center">
@@ -385,14 +384,14 @@ onBeforeUnmount(() => {
                     </UDropdownMenu>
                   </UFieldGroup>
 
-                  <UButton
+                  <!-- <UButton
                     :disabled="!latexCode"
                     icon="i-carbon-edit"
                     size="sm"
                     @click="format"
                   >
                     {{ t('format') }}
-                  </UButton>
+                  </UButton> -->
                   <UButton
                     :disabled="!latexCode"
                     icon="i-carbon-erase"
