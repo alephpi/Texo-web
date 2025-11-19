@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
@@ -27,8 +33,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: pnpm run lint
+      - name: Build docker image for tests
+        run: docker build -t texo-test --target development .
 
-      - name: Typecheck
-        run: pnpm run typecheck
+      - name: Lint in docker
+        run: docker run --rm texo-test pnpm run lint
+
+      - name: Typecheck in docker
+        run: docker run --rm texo-test pnpm run typecheck
+
+      - name: Test in docker
+        env:
+          FORCE_REAL_PANDOC: 1
+        run: docker run --rm -e FORCE_REAL_PANDOC texo-test pnpm vitest run

@@ -43,16 +43,24 @@ export function formatLatex(code: string): string {
 
 let lastInput: string | null = null
 let lastOutput: string | null = null
+let clientModeOverride: boolean | null = null
+
+function isClientRuntime(): boolean {
+  if (clientModeOverride !== null) {
+    return clientModeOverride
+  }
+  return import.meta.client
+}
 
 export async function convertToTypst(code: string, tool: Latex2TypstTool = Latex2TypstTool.Pandoc): Promise<string> {
   const cleanedCode = code.replace(/~/g, '\\ ')
   const cacheKey = `${tool}:${cleanedCode.trim()}`
 
-  if (lastInput === cacheKey && lastOutput !== null) {
-    if (import.meta.client) {
+  if (isClientRuntime()){
+    if (lastInput === cacheKey && lastOutput !== null) {
       console.log(`[convertToTypst] Cache hit: same input as last conversion`)
+      return lastOutput
     }
-    return lastOutput
   }
   let result: string
   switch (tool) {
@@ -74,8 +82,24 @@ export async function convertToTypst(code: string, tool: Latex2TypstTool = Latex
       throw new Error(`Unknown conversion tool: ${tool}`)
   }
 
-  lastInput = cacheKey
-  lastOutput = result
-
+  if (isClientRuntime()){
+    lastInput = cacheKey
+    lastOutput = result
+  }
   return result
+}
+
+/**
+ * Test helper: reset cached conversion state.
+ */
+export function __resetConvertCache(): void {
+  lastInput = null
+  lastOutput = null
+}
+
+/**
+ * Test helper: override client runtime detection.
+ */
+export function __setConvertClientMode(value: boolean | null): void {
+  clientModeOverride = value
 }
