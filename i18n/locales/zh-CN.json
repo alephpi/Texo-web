@@ -8,7 +8,7 @@
   "model_title": "模型",
   "upload_title": "上传",
   "uploader_label": "粘贴、拖拽或点击上传公式图片",
-  "uploader_description": "分辨率不小于384×384\n白边越少效果越好\n长宽比过于悬殊可能使模型产生幻觉",
+  "uploader_description": "分辨率不小于384×384\n白底黑字，白边尽可能少\n长宽比过于悬殊可能使模型产生幻觉",
   "upload_button": "点击上传",
   "upload_example": "示例图片",
   "preview_title": "预览",

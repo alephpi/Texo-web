@@ -4,7 +4,7 @@
     <div
       class="syntax-highlight-layer"
       :class="{ 'is-placeholder': !modelValue }"
-      v-html="highlightedCode || placeholderHtml"
+      v-html="highlightedCode || props.placeholder"
     />
 
     <!-- 可编辑文本框层 -->
@@ -41,7 +41,6 @@ const emit = defineEmits<{
 const colorMode = useColorMode()
 const textareaRef = ref<HTMLTextAreaElement>()
 const highlightedCode = ref('')
-const placeholderHtml = ref('')
 
 // 根据主题获取花括号颜色
 const braceColor = computed(() => {
@@ -50,15 +49,8 @@ const braceColor = computed(() => {
 
 // 初始化
 onMounted(() => {
-  updatePlaceholder()
   highlightCode(props.modelValue)
 })
-
-// 更新占位符样式
-const updatePlaceholder = () => {
-  const color = colorMode.value === 'dark' ? '#9ca3af' : '#6b7280'
-  placeholderHtml.value = `<span style="color: ${color};">${props.placeholder}</span>`
-}
 
 const highlightCode = (code: string) => {
   if (!code) {
@@ -107,7 +99,6 @@ watch(() => props.modelValue, (newValue) => {
 
 // 监听 colorMode 变化
 watch(() => colorMode.value, () => {
-  updatePlaceholder()
   highlightCode(props.modelValue)
 })
 </script>
