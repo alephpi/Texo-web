@@ -78,7 +78,8 @@ function clear() {
 
 async function copyAsTypst() {
   try {
-    const typstCode = convertToTypst(latexCode.value)
+    let typstCode = convertToTypst(latexCode.value)
+    typstCode = wrapCode(typstCode, '$...$')
     await navigator.clipboard.writeText(typstCode)
     toast?.add({
       title: t('typstCode') + ' ' + t('copied'),
