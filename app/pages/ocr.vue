@@ -177,7 +177,7 @@ const handlePaste = async (event: ClipboardEvent) => {
 
 // auto copy
 const auto_copy_items = ref(['latex', 'typst', ...wrap_format_options])
-const auto_copy_value = ref(null)
+const auto_copy_value = ref(undefined)
 
 let load: (model_config: ModelConfig) => Promise<void>
 let runOCR: (imageFile: File) => Promise<void>
