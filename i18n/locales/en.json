@@ -26,6 +26,7 @@
   "typstCode": "Typst",
   "convert_to": "Convert to ",
   "failed": "failed",
+  "autoCopy": "Auto copy",
   "comment_welcome": "Wanna say something to the developer or the users?",
   "report_issue": "Encounter an issue? Report here!",
   "load_model_from": "Load model from",

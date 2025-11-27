@@ -110,6 +110,18 @@ async function onFileChange(newFile: File | null | undefined) {
     imageFile.value = newFile
     await runOCR(imageFile.value)
     format()
+    if (auto_copy_value.value) {
+      switch (auto_copy_value.value) {
+        case 'typst':
+          copyAsTypst()
+          break
+        case 'latex':
+          copy()
+          break
+        default:
+          copy(auto_copy_value.value)
+      }
+    }
   }
 }
 
@@ -162,6 +174,10 @@ const handlePaste = async (event: ClipboardEvent) => {
     }
   }
 }
+
+// auto copy
+const auto_copy_items = ref(['latex', 'typst', ...wrap_format_options])
+const auto_copy_value = ref(null)
 
 let load: (model_config: ModelConfig) => Promise<void>
 let runOCR: (imageFile: File) => Promise<void>
@@ -409,6 +425,16 @@ onBeforeUnmount(() => {
                   >
                     {{ t('copyAs') + ' ' + t('typstCode') }}
                   </UButton>
+                </div>
+                <div class="flex">
+                  <USelect
+                    v-model="auto_copy_value"
+                    :items="auto_copy_items"
+                    :placeholder="t('autoCopy')"
+                    :ui="{
+                      content: 'w-auto'
+                    }"
+                  />
                 </div>
               </div>
             </template>
