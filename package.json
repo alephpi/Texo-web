@@ -21,6 +21,7 @@
     "@vite-pwa/nuxt": "1.0.7",
     "image-js": "^1.0.0",
     "katex": "^0.16.23",
+    "mathlive": "^0.108.2",
     "nuxt": "^4.1.2",
     "tex2typst": "^0.4.0"
   },
