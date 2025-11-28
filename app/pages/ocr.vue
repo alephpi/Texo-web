@@ -58,11 +58,13 @@ async function copy(wrap_format: string | null = null) {
       color: 'success',
       duration: 1500
     })
-  } catch {
+  } catch (err) {
+    console.log(err)
     toast?.add({
       title: t('copy_failed'),
+      description: String(err),
       color: 'error',
-      duration: 1500
+      duration: 0
     })
   }
 }
@@ -113,13 +115,13 @@ async function onFileChange(newFile: File | null | undefined) {
     if (auto_copy_value.value) {
       switch (auto_copy_value.value) {
         case 'typst':
-          copyAsTypst()
+          await copyAsTypst()
           break
         case 'latex':
-          copy()
+          await copy()
           break
         default:
-          copy(auto_copy_value.value)
+          await copy(auto_copy_value.value)
       }
     }
   }
@@ -177,7 +179,7 @@ const handlePaste = async (event: ClipboardEvent) => {
 
 // auto copy
 const auto_copy_items = ref(['latex', 'typst', ...wrap_format_options])
-const auto_copy_value = ref(undefined)
+const auto_copy_value = ref('latex')
 
 let load: (model_config: ModelConfig) => Promise<void>
 let runOCR: (imageFile: File) => Promise<void>
@@ -427,14 +429,21 @@ onBeforeUnmount(() => {
                   </UButton>
                 </div>
                 <div class="flex">
-                  <USelect
-                    v-model="auto_copy_value"
-                    :items="auto_copy_items"
-                    :placeholder="t('autoCopy')"
-                    :ui="{
-                      content: 'w-auto'
-                    }"
-                  />
+                  <UFieldGroup>
+                    <UBadge
+                      color="neutral"
+                      variant="outline"
+                      size="lg"
+                      :label="t('autoCopy')"
+                    />
+                    <USelect
+                      v-model="auto_copy_value"
+                      :items="auto_copy_items"
+                      :ui="{
+                        content: 'w-auto'
+                      }"
+                    />
+                  </UFieldGroup>
                 </div>
               </div>
             </template>
