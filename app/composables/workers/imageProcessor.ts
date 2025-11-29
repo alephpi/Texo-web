@@ -1,4 +1,4 @@
-import { readImg, Image, readCanvas } from 'image-js'
+import { Image, readCanvas } from 'image-js'
 
 const UNIMERNET_MEAN = 0.7931
 const UNIMERNET_STD = 0.1738
@@ -16,15 +16,28 @@ export async function preprocessImg(file: File) {
   // readCanvas actually also accepts an OffscreenCanvas, it's simply a matter of type annotation
   let image = readCanvas(canvas as unknown as HTMLCanvasElement)
   // console.log(image)
+  image = image.grey()
+  image = reverseColor(image)
   image = cropMargin(image)
   image = resize(image, 384, 384)
   const array = normalize(image)
   return { image, array }
 }
 
-function cropMargin(input: Image): Image {
-  const image = input.grey()
-  // return grey
+// support black background white text, detect by heuristic
+function reverseColor(image: Image): Image {
+  const histogram = image.histogram()
+  const threshold = 200
+  const black_pixels = histogram.slice(0, threshold).reduce((sum, v) => sum + v, 0)
+  const white_pixels = histogram.slice(threshold).reduce((sum, v) => sum + v, 0)
+  if (black_pixels >= white_pixels) {
+    console.log('black text white background detected, reverse color')
+    return image.invert()
+  }
+  return image
+}
+
+function cropMargin(image: Image): Image {
   const data = image.getRawImage().data
 
   let max = -Infinity, min = Infinity

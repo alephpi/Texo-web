@@ -8,7 +8,7 @@
   "model_title": "Model",
   "upload_title": "Upload",
   "uploader_label": "Paste, drop or click to upload your LaTeX image",
-  "uploader_description": "Resolution no less than 384×384\nBlack text, white background, minimal margin\nExtreme height-width ratio may lead to illusion",
+  "uploader_description": "Resolution no less than 384×384\nminimal margin\nExtreme height-width ratio may lead to illusion",
   "upload_button": "Click to upload",
   "upload_example": "Example image",
   "preview_title": "Preview",
