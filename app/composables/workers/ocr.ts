@@ -56,6 +56,7 @@ const predict = async (imageFile: File) => {
     throw new Error('Model not initialized. Please call init first.')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { image, array } = await preprocessImg(imageFile)
   const tensor = new Tensor('float32', array, [1, 1, 384, 384])
   const pixel_values = cat([tensor, tensor, tensor], 1)

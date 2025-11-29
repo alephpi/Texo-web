@@ -88,9 +88,8 @@ onMounted(() => {
   watchEffect(() => {
     mfe.placeholder = props.placeholder
   })
-
-  watch(props.modelValue, (newValue) => {
-    if (newValue === '') mfe.placeholder = props.placeholder
+  watchEffect(() => {
+    if (props.modelValue === '') mfe.placeholder = props.placeholder
   })
   // update every keys
   const propKeys = Object.keys(props) as (keyof typeof props)[]
