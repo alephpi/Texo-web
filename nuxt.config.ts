@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import copyKatexFonts from './utils/copy-katex-font'
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -13,8 +15,18 @@ export default defineNuxtConfig({
     enabled: true
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/scss/katex.scss'],
+  vue: {
+    compilerOptions: {
+      isCustomElement: tag => tag === 'math-field'
+    }
+  },
   compatibilityDate: '2025-01-15',
+  hooks: {
+    ready: (nuxt) => {
+      copyKatexFonts(nuxt.options.rootDir)
+    }
+  },
   eslint: {
     config: {
       stylistic: {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import katex from 'katex'
-import 'katex/dist/katex.min.css'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
 
