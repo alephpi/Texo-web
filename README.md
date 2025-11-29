@@ -16,6 +16,7 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 - [ ] streaming output
 - [x] pwa
 - [x] typst conversion
+- [x] WYSIWYG editor
 
 ## Acknowledgement
 - [Texo](https://github.com/alephpi/Texo): pretrained LaTeX OCR model
@@ -25,6 +26,8 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 - [Volver.js](https://github.com/volverjs/ai): web worker
 - Giscus: comment system
 - [tex2typst](https://github.com/qwinsi/tex2typst): typst conversion
+- KaTeX: latex previewer
+- Mathlive: latex previewer and WYSIWYG editor
 
 ## Develop
 
