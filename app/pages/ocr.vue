@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import katex from 'katex'
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem, TabsItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
 
 const { t } = useI18n()
@@ -176,6 +176,19 @@ const handlePaste = async (event: ClipboardEvent) => {
   }
 }
 
+// preview
+const preview_items = ref<TabsItem[]>([
+  {
+    label: 'KaTeX',
+    value: 'KaTeX'
+  },
+  {
+    label: 'Mathlive',
+    value: 'Mathlive'
+  }
+])
+const preview_item = ref<'KaTeX' | 'Mathlive'>('KaTeX')
+
 // auto copy
 const auto_copy_items = ref(['latex', 'typst', ...wrap_format_options])
 const auto_copy_value = ref('latex')
@@ -327,31 +340,53 @@ onBeforeUnmount(() => {
         <div class="space-y-4">
           <UCard>
             <template #header>
-              <h2 class="text-xl font-semibold flex items-center gap-2">
-                <Icon name="carbon:view" />
-                {{ t('preview_title') }}
-              </h2>
+              <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                  <Icon name="carbon:view" />
+                  {{ t('preview_title') }}
+                </h2>
+                <UTabs
+                  v-model="preview_item"
+                  class="ml-auto"
+                  size="md"
+                  variant="pill"
+                  color="info"
+                  :content="false"
+                  :items="preview_items"
+                />
+              </div>
             </template>
 
             <div class="flex items-center justify-center min-h-[200px] p-6 bg-white dark:bg-gray-800 rounded-lg overflow-x-auto">
-              <div
-                v-if="latexCode"
-                class="text-sm"
-                v-html="renderedLatex['renderResult']"
-              />
-              <p
-                v-else
-                class="text-gray-400"
-              >
-                {{ t('preview_placeholder') }}
-              </p>
-            </div>
+              <div v-show="preview_item==='KaTeX'">
+                <div
+                  v-if="latexCode"
+                  class="text-sm"
+                  v-html="renderedLatex['renderResult']"
+                />
+                <p
+                  v-else
+                  class="text-gray-400"
+                >
+                  {{ t('preview_placeholder_katex') }}
+                </p>
 
-            <div
-              v-if="renderedLatex['errorMessage']"
-              class="mt-2 text-sm text-red-700"
-              v-html="renderedLatex['errorMessage']"
-            />
+                <div
+                  v-if="renderedLatex['errorMessage']"
+                  class="mt-2 text-sm text-red-700"
+                  v-html="renderedLatex['errorMessage']"
+                />
+              </div>
+              <div
+                v-show="preview_item==='Mathlive'"
+                class="min-w-[400px] shrink-0"
+              >
+                <VMathfield
+                  v-model="latexCode"
+                  :placeholder=" t('preview_placeholder_mathlive') "
+                />
+              </div>
+            </div>
           </UCard>
 
           <UCard>

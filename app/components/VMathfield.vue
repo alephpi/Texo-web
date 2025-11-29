@@ -11,7 +11,7 @@ import { MathfieldElement } from 'mathlive'
 
 interface MathfieldElementProps {
   modelValue: string
-  placeholder: string
+  placeholder?: string
   disabled?: boolean
   defaultMode?: 'inline-math' | 'math' | 'text'
   letterShapeStyle?: 'auto' | 'tex' | 'iso' | 'french' | 'upright'
@@ -30,6 +30,7 @@ interface MathfieldElementProps {
 }
 
 const props = withDefaults(defineProps<MathfieldElementProps>(), {
+  placeholder: '\\text{Mathlive WYSIWYG LaTeX Editor}',
   disabled: false,
   defaultMode: 'math',
   letterShapeStyle: 'auto',
@@ -49,22 +50,19 @@ const props = withDefaults(defineProps<MathfieldElementProps>(), {
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const vue_mathfield_container = ref<HTMLDivElement | null>(null)
-let mfe: MathfieldElement | null = null
+let mfe: MathfieldElement
 
 onMounted(() => {
+  // for ssr, create this when DOM is ready
   mfe = new MathfieldElement()
   MathfieldElement.fontsDirectory = '/fonts'
-  //   '/home/mao/workspace/Texo-web/node_modules/.cache/vite/client/deps/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.ttf/KaTeX_Main-Regular.woff2'
-  //   '/home/mao/workspace/Texo-web/node_modules/.pnpm/katex@0.16.23/node_modules/katex/dist/fonts/KaTeX_Math-Italic.woff2'
   if (props.modelValue) {
     mfe.value = props.modelValue
   }
 
   mfe.addEventListener('input', () => {
-    if (mfe) {
-      emit('update:modelValue', mfe.value)
-      emit('change', mfe.value)
-    }
+    emit('update:modelValue', mfe.value)
+    emit('change', mfe.value)
   })
 
   // css styles
@@ -85,18 +83,31 @@ onMounted(() => {
   vue_mathfield_container.value?.appendChild(mfe)
 
   watchEffect(() => {
-    mfe!.value = props.modelValue
+    mfe.value = props.modelValue
+  })
+  watchEffect(() => {
+    mfe.placeholder = props.placeholder
+  })
+
+  watch(props.modelValue, (newValue) => {
+    if (newValue === '') mfe.placeholder = props.placeholder
+  })
+  // update every keys
+  const propKeys = Object.keys(props) as (keyof typeof props)[]
+  propKeys.forEach((key) => {
+    if (key !== 'modelValue' && key !== 'placeholder') {
+      watchEffect(() => {
+        // @ts-expect-error: suppress
+        mfe[key] = props[key]
+      })
+    }
   })
 })
 
-onBeforeUnmount(() => {
-  if (mfe) {
-    mfe.remove()
-    mfe = null
-  }
-})
-
-defineExpose({
-  getMathfield: () => mfe
-})
+// onBeforeUnmount(() => {
+//   if (mfe) {
+//     mfe.remove()
+//     mfe = null
+//   }
+// })
 </script>

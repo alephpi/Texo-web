@@ -7,7 +7,7 @@ const latexCode = ref('')
     <UPageCard>
       <VMathfield
         v-model="latexCode"
-        placeholder="Mathlive editor"
+        placeholder="\text{Mathlive WYSIWYG LaTeX Editor}"
         class="flex w-auto"
       />
     </UPageCard>
