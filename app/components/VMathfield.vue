@@ -8,10 +8,10 @@
 <script setup lang="ts">
 import type { VirtualKeyboardPolicy } from 'mathlive'
 import { MathfieldElement } from 'mathlive'
-import 'mathlive/fonts.css'
 
 interface MathfieldElementProps {
   modelValue: string
+  placeholder: string
   disabled?: boolean
   defaultMode?: 'inline-math' | 'math' | 'text'
   letterShapeStyle?: 'auto' | 'tex' | 'iso' | 'french' | 'upright'
@@ -50,16 +50,16 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const vue_mathfield_container = ref<HTMLDivElement | null>(null)
 let mfe: MathfieldElement | null = null
-onMounted(() => {
-  // 创建 MathfieldElement 实例
-  mfe = new MathfieldElement()
 
-  // 设置初始值
+onMounted(() => {
+  mfe = new MathfieldElement()
+  MathfieldElement.fontsDirectory = '/fonts'
+  //   '/home/mao/workspace/Texo-web/node_modules/.cache/vite/client/deps/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.ttf/KaTeX_Main-Regular.woff2'
+  //   '/home/mao/workspace/Texo-web/node_modules/.pnpm/katex@0.16.23/node_modules/katex/dist/fonts/KaTeX_Math-Italic.woff2'
   if (props.modelValue) {
     mfe.value = props.modelValue
   }
 
-  // 监听输入变化
   mfe.addEventListener('input', () => {
     if (mfe) {
       emit('update:modelValue', mfe.value)
@@ -70,38 +70,32 @@ onMounted(() => {
   // css styles
   mfe.className = 'w-full h-full flex justify-center block align-center m-auto min-h-10'
   mfe.setAttribute('style', 'display:block')
-  const style = document.createElement('style')
-  style.textContent = `
-    @media not (pointer: coarse) {
-        :host::part(virtual-keyboard-toggle) {
-            display: none;
-    }}
+  //   const style = document.createElement('style')
+  //   style.textContent = `
+  //     @media not (pointer: coarse) {
+  //         :host::part(virtual-keyboard-toggle) {
+  //             display: none;
+  //     }}
 
-    :host::part(menu-toggle) {
-        display: none;
-    }
-  `
-  mfe.shadowRoot!.appendChild(style)
-  // 将元素添加到容器中
+  //     :host::part(menu-toggle) {
+  //         display: none;
+  //     }
+  //   `
+  //   mfe.shadowRoot!.appendChild(style)
   vue_mathfield_container.value?.appendChild(mfe)
-})
 
-// 监听 modelValue 变化,更新 mathfield
-watch(() => props.modelValue, (newValue) => {
-  if (mfe && mfe.value !== newValue) {
-    mfe.value = newValue
-  }
+  watchEffect(() => {
+    mfe!.value = props.modelValue
+  })
 })
 
 onBeforeUnmount(() => {
-  // 清理事件监听器
   if (mfe) {
     mfe.remove()
     mfe = null
   }
 })
 
-// 暴露 mathfield 实例供父组件访问
 defineExpose({
   getMathfield: () => mfe
 })
