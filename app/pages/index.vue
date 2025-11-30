@@ -18,6 +18,13 @@ const links = computed<ButtonProps[]>(() => [
     size: 'xl',
     color: 'neutral',
     variant: 'subtle'
+  }, {
+    label: 'Bilibili',
+    to: 'https://www.bilibili.com/video/BV1qX1TBFEee/',
+    target: '_blank',
+    icon: 'i-simple-icons-bilibili',
+    size: 'xl',
+    class: 'bg-[#ff6699] hover:bg-[#ff8cb0]'
   }
 ])
 </script>

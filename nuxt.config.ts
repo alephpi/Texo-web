@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import copyKatexFonts from './utils/copy-katex-font'
+import replace from '@rollup/plugin-replace'
+import { execSync } from 'child_process'
 
 export default defineNuxtConfig({
   modules: [
@@ -8,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@vite-pwa/nuxt'
   ],
+
   ssr: true,
   components: true,
 
@@ -22,6 +25,17 @@ export default defineNuxtConfig({
     }
   },
   compatibilityDate: '2025-01-15',
+  vite: {
+    plugins: [
+      replace({
+        preventAssignment: true,
+        values: {
+          __COMMIT__: execSync('git rev-parse HEAD').toString().trim(),
+          __BUILD_DATE__: new Date().toLocaleString()
+        }
+      })
+    ]
+  },
   hooks: {
     ready: (nuxt) => {
       copyKatexFonts(nuxt.options.rootDir)
@@ -35,7 +49,6 @@ export default defineNuxtConfig({
       }
     }
   },
-
   i18n: {
     locales: [
       { code: 'zh-CN', name: '中文', file: 'zh-CN.json' },

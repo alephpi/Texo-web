@@ -58,13 +58,10 @@ useSeoMeta({
       </template>
 
       <template #right>
-        <UButton
-          to="https://github.com/alephpi/Texo-web"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
+        <VVersion
+          url="https://github.com/alephpi/Texo-web"
+          commit="__COMMIT__"
+          date="__BUILD_DATE__"
         />
       </template>
     </UFooter>

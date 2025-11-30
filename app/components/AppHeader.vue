@@ -47,12 +47,28 @@ const items = computed<NavigationMenuItem[]>(() => [{
         target="_blank"
         icon="i-simple-icons-github"
         aria-label="GitHub"
-        color="neutral"
+        color="info"
+        variant="ghost"
+      />
+      <UButton
+        to="https://github.com/alephpi/Texo-web"
+        target="_blank"
+        icon="i-simple-icons-github"
+        aria-label="GitHub"
+        color="primary"
+        variant="ghost"
+      />
+      <UButton
+        to="https://www.bilibili.com/video/BV1qX1TBFEee/"
+        target="_blank"
+        icon="i-simple-icons-bilibili"
+        aria-label="GitHub"
+        class="text-[#ff6699] hover:text-[#ff8cb0] hover:bg-color-[#ff8cb0]"
         variant="ghost"
       />
       <img
         alt="GitHub Repo stars"
-        src="https://img.shields.io/github/stars/alephpi/Texo"
+        src="https://img.shields.io/github/stars/alephpi/texo?style=plastic"
       >
     </template>
   </UHeader>
