@@ -3,6 +3,24 @@
   "description": "纯前端 LaTeX 公式识别工具",
   "star-me": "点个星星",
   "snip-and-recognize": "截图并识别",
+  "feature": {
+    "fast": {
+      "title": "快速·轻量·准确",
+      "description": "仅20M参数的极简SOTA LaTeX公式识别模型，完全在浏览器中运行"
+    },
+    "darkMode": {
+      "title": "深色模式",
+      "description": "习惯深色模式下工作？支持深色模式公式识别！"
+    },
+    "editor": {
+      "title": "LaTeX 编辑器",
+      "description": "识别结果有误？在所见即所得编辑器中修改。"
+    },
+    "openSource": {
+      "title": "源码开放",
+      "description": "好奇背后的技术实现？点击右上角查看！"
+    }
+  },
   "recognize": "识别",
   "comment": "留言",
   "model_title": "模型",
@@ -36,13 +54,5 @@
   "recognizing": "正在识别...",
   "recognize_success": "识别成功",
   "recognize_failed": "识别失败",
-  "unknown_error": "未知错误，请查看控制台日志",
-  "info": {
-    "title": "Image Information",
-    "filename": "Filename",
-    "size": "File Size",
-    "dimensions": "Dimensions",
-    "type": "Type",
-    "noImage": "No image uploaded"
-  }
+  "unknown_error": "未知错误，请查看控制台日志"
 }

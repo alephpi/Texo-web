@@ -3,6 +3,24 @@
   "description": "In-browser LaTeX formula OCR tool",
   "star-me": "Star me",
   "snip-and-recognize": "Snip & Recognize!",
+  "feature": {
+    "fast": {
+      "title": "Fast, light & accurate",
+      "description": "Minimalist SOTA LaTeX OCR model within 20M params, purely in browser"
+    },
+    "darkMode": {
+      "title": "Dark mode",
+      "description": "Work in dark mode? Support dark mode recognition too!"
+    },
+    "editor": {
+      "title": "LaTeX Editor",
+      "description": "Something wrong in the result? Just edit it in WYSIWYG editor."
+    },
+    "openSource": {
+      "title": "Open source",
+      "description": "Curious about the tech behind? Click the top-right corner to check!"
+    }
+  },
   "recognize": "Recognize",
   "comment": "Comment",
   "model_title": "Model",
@@ -36,13 +54,5 @@
   "recognizing": "Recognizing...",
   "recognize_success": "Recognition succeed",
   "recognize_failed": "Recognition failed",
-  "unknown_error": "Unknown error, please check console log",
-  "info": {
-    "title": "Image Information",
-    "filename": "Filename",
-    "size": "File Size",
-    "dimensions": "Dimensions",
-    "type": "Type",
-    "noImage": "No image uploaded"
-  }
+  "unknown_error": "Unknown error, please check console log"
 }
