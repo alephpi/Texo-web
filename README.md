@@ -28,6 +28,7 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 - [tex2typst](https://github.com/qwinsi/tex2typst): typst conversion
 - KaTeX: latex previewer
 - Mathlive: latex previewer and WYSIWYG editor
+- **Special thanks go to http://gh.llkk.cc/ for providing free, fast and stable github mirror to facilitate the Texo model access for CN users.**
 
 ## Develop
 
