@@ -46,6 +46,47 @@ export function convertToTypst(code: string) {
   return tex2typst(cleanedCode)
 }
 
+function sanitizeMathMLForWord(mathml: string): string {
+  if (!mathml) return mathml
+
+  // Strip layout hacks that Word renders as blank boxes.
+  if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined') {
+    return mathml
+      .replace(/<mpadded[\s\S]*?<\/mpadded>/g, '')
+      .replace(
+        /<mspace\b[^>]*\bwidth=(['"])?1(?:\.0+)?em\1[^>]*>[\s\S]*?<\/mspace>/g,
+        ''
+      )
+      .replace(/<mspace\b[^>]*\bwidth=(['"])?1(?:\.0+)?em\1[^>]*\/>/g, '')
+  }
+
+  const doc = new DOMParser().parseFromString(mathml, 'application/xml')
+  const root = doc.documentElement
+  if (!root || root.nodeName === 'parsererror') return mathml
+
+  root.querySelectorAll('mpadded').forEach((node) => {
+    const parent = node.parentNode
+    if (!parent) return
+    while (node.firstChild) {
+      parent.insertBefore(node.firstChild, node)
+    }
+    parent.removeChild(node)
+  })
+
+  root.querySelectorAll('mspace').forEach((node) => {
+    const width = node.getAttribute('width')
+    if (!width) return
+    const match = width.trim().match(/^([0-9]*\.?[0-9]+)em$/)
+    if (!match) return
+    const value = Number(match[1])
+    if (Number.isFinite(value) && value >= 1) {
+      node.remove()
+    }
+  })
+
+  return new XMLSerializer().serializeToString(root)
+}
+
 export function convertToMathML(code: string) {
   const cleanedCode = code.trim()
   if (!cleanedCode) return ''
@@ -66,5 +107,5 @@ export function convertToMathML(code: string) {
     /<mtext>([\s\u00A0\u2000-\u200A\u202F\u205F\u3000]+)<\/mtext>/g,
     '<mspace width="0.2em"/>'
   )
-  return mathml
+  return sanitizeMathMLForWord(mathml)
 }
