@@ -1,7 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import copyKatexFonts from './utils/copy-katex-font'
+import mirrorPublicAssets from './utils/mirror-public-assets'
 import replace from '@rollup/plugin-replace'
 import { execSync } from 'child_process'
+import { resolve } from 'path'
+
+let nitroOutputDirs: { publicDir?: string, serverDir?: string } = {}
 
 export default defineNuxtConfig({
   modules: [
@@ -39,6 +43,22 @@ export default defineNuxtConfig({
   hooks: {
     ready: (nuxt) => {
       copyKatexFonts(nuxt.options.rootDir)
+    },
+    'nitro:build:public-assets': (nitro) => {
+      const publicDir = nitro?.options?.output?.publicDir
+      const serverDir = nitro?.options?.output?.serverDir
+      nitroOutputDirs = { publicDir, serverDir }
+      if (publicDir && serverDir) {
+        mirrorPublicAssets(publicDir, resolve(serverDir))
+      }
+    },
+    'build:done': () => {
+      if (nitroOutputDirs.publicDir && nitroOutputDirs.serverDir) {
+        mirrorPublicAssets(nitroOutputDirs.publicDir, resolve(nitroOutputDirs.serverDir))
+        return
+      }
+      const outputDir = resolve(process.cwd(), '.output')
+      mirrorPublicAssets(resolve(outputDir, 'public'), resolve(outputDir, 'server'))
     }
   },
   eslint: {

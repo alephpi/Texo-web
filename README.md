@@ -16,6 +16,7 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 - [ ] streaming output
 - [x] pwa
 - [x] typst conversion
+- [x] mathml conversion (https://github.com/alephpi/Texo-web/pull/13)
 - [x] WYSIWYG editor
 
 ## Acknowledgement

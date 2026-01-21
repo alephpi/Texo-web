@@ -43,6 +43,7 @@
   "clear": "Clear",
   "copyAs": "Copy as",
   "typstCode": "Typst",
+  "mathmlCode": "MathML",
   "convert_to": "Convert to ",
   "failed": "failed",
   "autoCopy": "Auto copy",

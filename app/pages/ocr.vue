@@ -99,6 +99,27 @@ async function copyAsTypst() {
   }
 }
 
+async function copyAsMathML() {
+  try {
+    const mathmlCode = convertToMathML(latexCode.value)
+    await navigator.clipboard.writeText(mathmlCode)
+    toast?.add({
+      title: t('mathmlCode') + ' ' + t('copied'),
+      color: 'success',
+      duration: 1500
+    })
+  } catch (err) {
+    console.log(err)
+    toast?.add({
+      title: t('convert_to') + ' ' + t('mathmlCode') + ' ' + t('failed'),
+      description: String(err),
+      color: 'error',
+      duration: 0,
+      progress: false
+    })
+  }
+}
+
 const imageFile = ref<File | null>(null)
 const imgHolder = ref(null)
 
@@ -115,6 +136,9 @@ async function onFileChange(newFile: File | null | undefined) {
       switch (auto_copy_value.value) {
         case 'typst':
           await copyAsTypst()
+          break
+        case 'mathml':
+          await copyAsMathML()
           break
         case 'latex':
           await copy()
@@ -190,7 +214,7 @@ const preview_items = ref<TabsItem[]>([
 const preview_item = ref<'KaTeX' | 'Mathlive'>('KaTeX')
 
 // auto copy
-const auto_copy_items = ref(['latex', 'typst', ...wrap_format_options])
+const auto_copy_items = ref(['latex', 'typst', 'mathml', ...wrap_format_options])
 const auto_copy_value = ref('latex')
 
 let load: (model_config: ModelConfig) => Promise<void>
@@ -460,6 +484,14 @@ onBeforeUnmount(() => {
                     @click="copyAsTypst"
                   >
                     {{ t('copyAs') + ' ' + t('typstCode') }}
+                  </UButton>
+                  <UButton
+                    :disabled="!latexCode"
+                    icon="i-carbon-code"
+                    size="sm"
+                    @click="copyAsMathML"
+                  >
+                    {{ t('copyAs') + ' ' + t('mathmlCode') }}
                   </UButton>
                 </div>
                 <div class="flex">
