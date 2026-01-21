@@ -1,4 +1,4 @@
-import Temml from 'temml'
+import katex from 'katex'
 import { tex2typst } from 'tex2typst'
 
 /**
@@ -50,12 +50,21 @@ export function convertToMathML(code: string) {
   const cleanedCode = code.trim()
   if (!cleanedCode) return ''
 
-  const mathml = Temml.renderToString(cleanedCode, {
-    annotate: false,
+  const rendered = katex.renderToString(cleanedCode, {
     throwOnError: false,
     displayMode: true,
-    xml: true
+    output: 'mathml'
   })
 
+  const mathmlMatch = rendered.match(/<math[\s\S]*<\/math>/)
+  if (!mathmlMatch) return rendered
+
+  let mathml = mathmlMatch[0]
+  mathml = mathml.replace(/<annotation[\s\S]*?<\/annotation>/g, '')
+  mathml = mathml.replace(/<\/?semantics[^>]*>/g, '')
+  mathml = mathml.replace(
+    /<mtext>([\s\u00A0\u2000-\u200A\u202F\u205F\u3000]+)<\/mtext>/g,
+    '<mspace width="0.2em"/>'
+  )
   return mathml
 }
