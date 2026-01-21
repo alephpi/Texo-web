@@ -43,6 +43,7 @@
   "clear": "清除",
   "copyAs": "复制为",
   "typstCode": "Typst",
+  "mathmlCode": "MathML",
   "convert_to": "转换为",
   "failed": "失败",
   "autoCopy": "自动复制",

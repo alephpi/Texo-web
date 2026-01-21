@@ -1,3 +1,4 @@
+import Temml from 'temml'
 import { tex2typst } from 'tex2typst'
 
 /**
@@ -43,4 +44,18 @@ export function formatLatex(code: string): string {
 export function convertToTypst(code: string) {
   const cleanedCode = code.replace(/~/g, '\\ ')
   return tex2typst(cleanedCode)
+}
+
+export function convertToMathML(code: string) {
+  const cleanedCode = code.trim()
+  if (!cleanedCode) return ''
+
+  const mathml = Temml.renderToString(cleanedCode, {
+    annotate: false,
+    throwOnError: false,
+    displayMode: true,
+    xml: true
+  })
+
+  return mathml
 }
