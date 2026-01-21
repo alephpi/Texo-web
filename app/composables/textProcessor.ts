@@ -46,6 +46,30 @@ export function convertToTypst(code: string) {
   return tex2typst(cleanedCode)
 }
 
+/**
+ * Sanitizes MathML content for compatibility with Microsoft Word.
+ *
+ * Removes layout hacks and spacing elements that Word renders incorrectly as blank boxes.
+ * Handles both server-side (regex-based) and client-side (DOM-based) sanitization.
+ *
+ * @param mathml - The MathML string to sanitize
+ * @returns The sanitized MathML string. Returns the original input if parsing fails or if DOM APIs are unavailable.
+ *
+ * @remarks
+ * - If `DOMParser` and `XMLSerializer` are unavailable (server-side), uses regex patterns to remove:
+ *   - All `<mpadded>` elements
+ *   - `<mspace>` elements with width="1em" or width="1.0em"
+ * - If DOM APIs are available (client-side), parses the MathML and:
+ *   - Unwraps `<mpadded>` elements by moving their children to the parent
+ *   - Removes `<mspace>` elements with width >= 1em
+ *
+ * @example
+ * ```ts
+ * const original = '<math><mpadded><mi>x</mi></mpadded></math>';
+ * const sanitized = sanitizeMathMLForWord(original);
+ * // Returns: '<math><mi>x</mi></math>'
+ * ```
+ */
 function sanitizeMathMLForWord(mathml: string): string {
   if (!mathml) return mathml
 
