@@ -1,3 +1,7 @@
+packages:
+  - .
+  - TEXO-TAURI
+
 ignoredBuiltDependencies:
   - '@parcel/watcher'
   - '@tailwindcss/oxide'

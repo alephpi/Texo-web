@@ -55,5 +55,12 @@
   "recognizing": "正在识别...",
   "recognize_success": "识别成功",
   "recognize_failed": "识别失败",
-  "unknown_error": "未知错误，请查看控制台日志"
+  "unknown_error": "未知错误，请查看控制台日志",
+  "hotkey_title": "快捷键",
+  "hotkey_placeholder": "Alt+Q",
+  "hotkey_hint": "点击输入框后按下组合键，仅桌面版可用。示例：Alt+Q",
+  "hotkey_save": "保存快捷键",
+  "hotkey_saved": "快捷键已更新",
+  "hotkey_save_failed": "更新快捷键失败",
+  "hotkey_invalid": "快捷键不能为空"
 }

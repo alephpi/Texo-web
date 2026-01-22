@@ -1,0 +1,25 @@
+[package]
+name = "texo-tauri"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "1", features = ["shell-open", "system-tray", "global-shortcut", "global-shortcut-all", "clipboard-all", "window-all"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+arboard = "3.6"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+base64 = "0.22"
+tokio = { version = "1", features = ["rt", "time"] }
+single-instance = "0.3"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

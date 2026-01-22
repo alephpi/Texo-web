@@ -55,5 +55,12 @@
   "recognizing": "Recognizing...",
   "recognize_success": "Recognition succeed",
   "recognize_failed": "Recognition failed",
-  "unknown_error": "Unknown error, please check console log"
+  "unknown_error": "Unknown error, please check console log",
+  "hotkey_title": "Shortcut",
+  "hotkey_placeholder": "Alt+Q",
+  "hotkey_hint": "Click the field and press a key combo. Desktop only. Example: Alt+Q",
+  "hotkey_save": "Save shortcut",
+  "hotkey_saved": "Shortcut updated",
+  "hotkey_save_failed": "Failed to update shortcut",
+  "hotkey_invalid": "Shortcut cannot be empty"
 }

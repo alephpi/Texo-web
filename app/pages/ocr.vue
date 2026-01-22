@@ -6,6 +6,12 @@ import type { ModelConfig } from '../composables/types'
 const { t } = useI18n()
 const toast = useToast()
 
+const DEFAULT_HOTKEY = 'Alt+Q'
+const isDesktop = ref(false)
+const hotkeyValue = ref(DEFAULT_HOTKEY)
+const hotkeySaving = ref(false)
+let unlistenScreenshot: (() => void) | null = null
+
 const latexCode = ref('')
 const renderedLatex = computed(() => {
   if (!latexCode.value) {
@@ -50,7 +56,7 @@ const wrap_format_menu: DropdownMenuItem[] = wrap_format_options.map(
 async function copy(wrap_format: string | null = null) {
   try {
     const wrappedCode = wrapCode(latexCode.value, wrap_format)
-    await navigator.clipboard.writeText(wrappedCode)
+    await writeTextToClipboard(wrappedCode)
 
     toast?.add({
       title: wrap_format ? t('copied_with_format') + ' ' + wrap_format : t('copied'),
@@ -81,7 +87,7 @@ async function copyAsTypst() {
   try {
     let typstCode = convertToTypst(latexCode.value)
     typstCode = wrapCode(typstCode, '$...$')
-    await navigator.clipboard.writeText(typstCode)
+    await writeTextToClipboard(typstCode)
     toast?.add({
       title: t('typstCode') + ' ' + t('copied'),
       color: 'success',
@@ -102,7 +108,7 @@ async function copyAsTypst() {
 async function copyAsMathML() {
   try {
     const mathmlCode = convertToMathML(latexCode.value)
-    await navigator.clipboard.writeText(mathmlCode)
+    await writeTextToClipboard(mathmlCode)
     toast?.add({
       title: t('mathmlCode') + ' ' + t('copied'),
       color: 'success',
@@ -120,11 +126,127 @@ async function copyAsMathML() {
   }
 }
 
+/**
+ * 保存全局快捷键（桌面端）。
+ */
+async function saveHotkey() {
+  if (!isDesktop.value) return
+  const accelerator = hotkeyValue.value.trim()
+  if (!accelerator) {
+    toast?.add({
+      title: t('hotkey_invalid'),
+      color: 'error',
+      duration: 2000
+    })
+    return
+  }
+
+  try {
+    hotkeySaving.value = true
+    const tauri = getTauriApi()
+    if (!tauri?.tauri) {
+      throw new Error('Tauri API not available')
+    }
+    const saved = await tauri.tauri.invoke('set_global_shortcut', { accelerator })
+    if (typeof saved === 'string') {
+      hotkeyValue.value = saved
+    }
+    localStorage.setItem('texo.globalShortcut', hotkeyValue.value)
+    toast?.add({
+      title: t('hotkey_saved'),
+      color: 'success',
+      duration: 1500
+    })
+  } catch (err) {
+    toast?.add({
+      title: t('hotkey_save_failed'),
+      description: String(err),
+      color: 'error',
+      duration: 0
+    })
+  } finally {
+    hotkeySaving.value = false
+  }
+}
+
 const imageFile = ref<File | null>(null)
 const imgHolder = ref(null)
 
 function createObjectURL(file: File) {
   return URL.createObjectURL(file)
+}
+
+/**
+ * 获取 Tauri API（仅桌面端）。
+ */
+function getTauriApi() {
+  if (!import.meta.client) return null
+  return (window as unknown as { __TAURI__?: any }).__TAURI__ ?? null
+}
+
+/**
+ * 统一复制入口：桌面端走 Tauri 剪贴板，Web 走 Clipboard API。
+ */
+async function writeTextToClipboard(text: string) {
+  if (!import.meta.client) return
+  const tauri = getTauriApi()
+  if (tauri?.tauri) {
+    await tauri.tauri.invoke('write_text_to_clipboard', { text })
+    return
+  }
+  if (!navigator.clipboard) {
+    throw new Error('Clipboard API is not available')
+  }
+  await navigator.clipboard.writeText(text)
+}
+
+/**
+ * 将 data URL 转成 File 以复用上传流程。
+ */
+async function dataUrlToFile(dataUrl: string, filename: string) {
+  const response = await fetch(dataUrl)
+  const blob = await response.blob()
+  return new File([blob], filename, { type: blob.type || 'image/png' })
+}
+
+/**
+ * 归一化按键，输出快捷键的主键名称。
+ */
+function normalizeHotkeyKey(event: KeyboardEvent) {
+  const key = event.key
+  if (['Control', 'Shift', 'Alt', 'Meta'].includes(key)) return null
+  const keyMap: Record<string, string> = {
+    ' ': 'Space',
+    Escape: 'Esc',
+    ArrowUp: 'Up',
+    ArrowDown: 'Down',
+    ArrowLeft: 'Left',
+    ArrowRight: 'Right',
+    '+': 'Plus',
+    '=': 'Plus',
+    '-': 'Minus'
+  }
+  if (keyMap[key]) return keyMap[key]
+  if (key.length === 1) return key.toUpperCase()
+  return key
+}
+
+/**
+ * 捕获输入框内的按键组合并更新快捷键显示。
+ */
+function captureHotkey(event: KeyboardEvent) {
+  if (!isDesktop.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  const key = normalizeHotkeyKey(event)
+  if (!key) return
+  const parts = []
+  if (event.ctrlKey) parts.push('Ctrl')
+  if (event.altKey) parts.push('Alt')
+  if (event.shiftKey) parts.push('Shift')
+  if (event.metaKey) parts.push('Meta')
+  parts.push(key)
+  hotkeyValue.value = parts.join('+')
 }
 
 async function onFileChange(newFile: File | null | undefined) {
@@ -269,6 +391,36 @@ onMounted(async () => {
   }
   window.addEventListener('paste', handlePaste)
 
+  const tauri = getTauriApi()
+  if (tauri?.event && tauri?.tauri) {
+    isDesktop.value = true
+    try {
+      const stored = localStorage.getItem('texo.globalShortcut')
+      if (stored) {
+        hotkeyValue.value = stored
+        await tauri.tauri.invoke('set_global_shortcut', { accelerator: stored })
+      } else {
+        const saved = await tauri.tauri.invoke('get_global_shortcut')
+        if (typeof saved === 'string') {
+          hotkeyValue.value = saved
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to read global shortcut', err)
+    }
+    unlistenScreenshot = await tauri.event.listen('screenshot-captured', async (event: any) => {
+      try {
+        const payload = event?.payload
+        const dataUrl = payload?.data_url
+        if (typeof dataUrl !== 'string') return
+        const file = await dataUrlToFile(dataUrl, `screenshot-${Date.now()}.png`)
+        await onFileChange(file)
+      } catch (err) {
+        console.error('Failed to handle screenshot payload', err)
+      }
+    })
+  }
+
   const model_config = await useSource()
   useModelLoadingToast(t, model_config, progress, isReady)
   await load(model_config)
@@ -276,6 +428,10 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('paste', handlePaste)
+  if (unlistenScreenshot) {
+    unlistenScreenshot()
+    unlistenScreenshot = null
+  }
 })
 </script>
 
@@ -356,6 +512,33 @@ onBeforeUnmount(() => {
                 color="secondary"
                 @click="loadTestImage()"
               />
+            </div>
+          </UCard>
+          <UCard v-if="isDesktop">
+            <template #header>
+              <h2 class="text-xl font-semibold flex items-center gap-2">
+                <Icon name="carbon:keyboard" />
+                {{ t('hotkey_title') }}
+              </h2>
+            </template>
+            <div class="p-4 space-y-3">
+              <UInput
+                v-model="hotkeyValue"
+                :disabled="!isDesktop"
+                readonly
+                :placeholder="t('hotkey_placeholder')"
+                @keydown="captureHotkey"
+              />
+              <p class="text-xs text-gray-500">
+                {{ t('hotkey_hint') }}
+              </p>
+              <UButton
+                :disabled="!isDesktop"
+                :loading="hotkeySaving"
+                @click="saveHotkey"
+              >
+                {{ t('hotkey_save') }}
+              </UButton>
             </div>
           </UCard>
         </div>

@@ -72,6 +72,17 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 > [!Note]
 > Pay attention that `pnpm preview` would listen on `http://[::]:3000` while this is not a secure context for `caches` api, and you will get `500: internal server error` which is due to either `insecure server` or `caches not defined` error, instead you need to visit `localhost:3000` as it is secure for the browser.
 
+### Desktop (Tauri)
+
+Desktop packaging guide is in `TEXO-TAURI/README.md`. Quick start:
+
+```bash
+cd TEXO-TAURI
+pnpm install
+pnpm dev
+pnpm build
+```
+
 ## License
 
 AGPL-3.0

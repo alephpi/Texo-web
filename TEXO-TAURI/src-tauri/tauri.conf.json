@@ -1,0 +1,89 @@
+{
+  "$schema": "https://schema.tauri.app/config/1",
+  "build": {
+    "beforeDevCommand": "pnpm --dir .. dev -- --host 0.0.0.0 --port 1420",
+    "beforeBuildCommand": "pnpm --dir .. exec nuxi generate",
+    "devPath": "http://localhost:1420",
+    "distDir": "../../.output/public",
+    "withGlobalTauri": true
+  },
+  "package": {
+    "productName": "Texo Desktop",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "clipboard": {
+        "all": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": true
+      }
+    },
+    "windows": [
+      {
+        "title": "Texo",
+        "url": "/ocr",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.texo.desktop",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "appimage": {
+        "bundleMediaFramework": false
+      },
+      "deb": {},
+      "rpm": {},
+      "dmg": {
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        },
+        "windowSize": {
+          "height": 400,
+          "width": 660
+        }
+      },
+      "macOS": {
+        "hardenedRuntime": true,
+        "minimumSystemVersion": "10.13"
+      },
+      "windows": {
+        "wix": {
+          "language": [
+            "en-US",
+            "zh-CN"
+          ]
+        }
+      }
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.ico"
+    }
+  }
+}
