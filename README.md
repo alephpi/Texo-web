@@ -1,6 +1,8 @@
 # Texo-web
 The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt.
 
+For Windows users, a community-contributed installable version implementation is available [here](https://github.com/xjhaz/Texo-web/releases/tag/0.1.0) based on Tauri. (Thanks to [@xjhaz](https://github.com/xjhaz))
+
 >[!Note]
 > Feel honored been collected in [@ruanyf's weekly](https://www.ruanyifeng.com/blog/2025/11/weekly-issue-372.html), if you are a user from there, and have an issue on visit the website, please leave a message in [Texo-web](https://github.com/alephpi/Texo-web) repo. Due to my limited front-end skills, please contribute to help me in any form.
 > 
