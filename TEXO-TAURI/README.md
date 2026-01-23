@@ -20,12 +20,12 @@ tray/background behavior.
 - Linux: install `flameshot` or `gnome-screenshot`.
 
 ## Install
-From repo root:
+From repo root (web deps only):
 ```bash
 pnpm install
 ```
 
-From `TEXO-TAURI`:
+From `TEXO-TAURI` (Tauri deps):
 ```bash
 pnpm install
 ```

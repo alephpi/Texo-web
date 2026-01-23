@@ -1,6 +1,5 @@
 packages:
   - .
-  - TEXO-TAURI
 
 ignoredBuiltDependencies:
   - '@parcel/watcher'

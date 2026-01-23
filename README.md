@@ -39,11 +39,12 @@ The web application for [Texo](https://github.com/alephpi/Texo). Built with Nuxt
 
 ### Setup
 
-Make sure to install the dependencies:
+Make sure to install the web dependencies:
 
 ```bash
 pnpm install
 ```
+This does not install any Tauri dependencies. See Desktop (Tauri) if needed.
 
 ### Development Server
 
@@ -74,9 +75,11 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 ### Desktop (Tauri)
 
-Desktop packaging guide is in `TEXO-TAURI/README.md`. Quick start:
+Desktop packaging guide is in `TEXO-TAURI/README.md`. Tauri dependencies are
+installed only inside that folder to keep web-only installs light. Quick start:
 
 ```bash
+pnpm install
 cd TEXO-TAURI
 pnpm install
 pnpm dev
