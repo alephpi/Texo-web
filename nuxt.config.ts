@@ -41,7 +41,7 @@ export default defineNuxtConfig({
     ]
   },
   hooks: {
-    ready: (nuxt) => {
+    'ready': (nuxt) => {
       copyKatexFonts(nuxt.options.rootDir)
     },
     'nitro:build:public-assets': (nitro) => {
