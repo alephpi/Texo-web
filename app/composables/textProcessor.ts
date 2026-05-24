@@ -8,7 +8,7 @@ import { tex2typst } from 'tex2typst'
  * @returns 包裹后的代码
  */
 export function wrapCode(code: string, wrapOption: string | null): string {
-  const cleanCode = code.trim()
+  const cleanCode = removeEmptyChars(code.trim())
 
   if (!wrapOption) {
     return cleanCode
@@ -41,8 +41,13 @@ export function formatLatex(code: string): string {
   return new_tokens.join('')
 }
 
+// remove `~` and `\!`
+export function removeEmptyChars(code: string) {
+  return code.replace(/~/g, '').replace(/\\!/g, '')
+}
+
 export function convertToTypst(code: string) {
-  const cleanedCode = code.replace(/~/g, '\\ ')
+  const cleanedCode = removeEmptyChars(code)
   return tex2typst(cleanedCode)
 }
 
