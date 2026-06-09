@@ -1,6 +1,25 @@
 import katex from 'katex'
 import { tex2typst } from 'tex2typst'
 
+export function orthographyToLaTeX(code: string): string {
+  const replacements: Record<string, string> = {
+    '\\infin': '\\infty',
+    '\\rarr': '\\rightarrow',
+    '\\larr': '\\leftarrow',
+    '\\harr': '\\leftrightarrow',
+    '\\Rarr': '\\Rightarrow',
+    '\\Larr': '\\Leftarrow',
+    '\\Harr': '\\Leftrightarrow',
+    '\\darr': '\\downarrow',
+    '\\uarr': '\\uparrow'
+  }
+
+  return code.replace(
+    /\\(?:infin|rarr|larr|harr|Rarr|Larr|Harr|darr|uarr)\b/g,
+    match => replacements[match]
+  )
+}
+
 /**
  * 包裹 LaTeX 代码
  * @param code - 原始 LaTeX 代码

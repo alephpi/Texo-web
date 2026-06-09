@@ -2,6 +2,7 @@
 import katex from 'katex'
 import type { DropdownMenuItem, TabsItem } from '@nuxt/ui'
 import type { ModelConfig } from '../composables/types'
+import { orthographyToLaTeX } from '../composables/textProcessor'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -254,6 +255,7 @@ onMounted(async () => {
 
     if (result.status === 'result') {
       latexCode.value = result.output || ''
+      latexCode.value = orthographyToLaTeX(latexCode.value)
       toast.update('predict', {
         title: t('recognize_success') + ' ' + timeStr,
         color: 'success',
